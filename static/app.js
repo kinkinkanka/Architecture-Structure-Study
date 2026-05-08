@@ -1456,7 +1456,9 @@ function quizRender() {
   const [x0, y0, x1, y1] = crop.bbox;
   const url = `/api/crop-image/${crop.page}?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}`;
   img.alt = `문제 ${crop.num}`;
-  img.onerror = () => { img.alt = `문제 ${crop.num} 로드 실패`; };
+  img.style.opacity = "0.4";
+  img.onload  = () => { img.style.opacity = "1"; };
+  img.onerror = () => { img.style.opacity = "1"; img.alt = `문제 ${crop.num} - 이미지 로드 실패`; };
   img.src = url;
 
   // 카드 헤더

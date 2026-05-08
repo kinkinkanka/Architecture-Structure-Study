@@ -485,27 +485,29 @@ html,body { height:100%; font-family:var(--font); background:var(--bg); color:va
 /* 문제 카드 뷰어 */
 .prob-card-wrap {
   flex:1; overflow-y:auto; display:flex; justify-content:center;
-  align-items:flex-start; background:#f0f2f5; padding:28px 20px;
+  align-items:flex-start; background:#f0f2f5; padding:20px 16px;
 }
 .prob-card {
   background:#fff; border-radius:14px;
-  box-shadow:0 2px 20px rgba(0,0,0,.12);
-  overflow:hidden; width:100%; max-width:640px;
+  box-shadow:0 2px 24px rgba(0,0,0,.13);
+  overflow:hidden; width:100%; max-width:960px;
 }
 .prob-card-header {
   display:flex; align-items:center; gap:10px;
-  padding:12px 16px; background:#fafafa;
+  padding:12px 20px; background:#fafafa;
   border-bottom:1px solid #eee; flex-wrap:wrap;
 }
 .prob-num-badge {
-  font-size:12px; font-weight:700; color:#fff;
-  padding:4px 14px; border-radius:20px; white-space:nowrap;
+  font-size:13px; font-weight:700; color:#fff;
+  padding:5px 16px; border-radius:20px; white-space:nowrap;
 }
 .prob-chapter-info {
   font-size:12px; color:var(--text3);
 }
 .prob-page-img {
   width:100%; height:auto; display:block;
+  image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;
+  transition:opacity .2s;
 }
 .select-input {
   background:var(--bg2); border:1px solid var(--border);
