@@ -62,12 +62,13 @@
 
   <!-- ===== 탭 1: 학습 ===== -->
   <div id="tab-study" class="tab-content active">
-    <aside class="sidebar" id="study-sidebar">
+    <aside class="sidebar" id="study-sidebar"><!-- resize: right edge handled by #resize-sidebar -->
       <div class="sidebar-header">
         <input type="text" id="chapter-search" placeholder="챕터 검색..." class="search-input">
       </div>
       <div id="chapter-list" class="chapter-list"></div>
     </aside>
+    <div class="resize-handle" id="resize-sidebar"></div>
 
     <main class="study-main">
       <!-- 웰컴 화면 -->
@@ -175,6 +176,7 @@
             </div>
           </div>
 
+          <div class="resize-handle" id="resize-annpanel"></div>
           <!-- 오른쪽: AI 질문 기록 패널 -->
           <div class="scan-ann-panel" id="scan-ann-panel">
             <div class="ann-panel-header">

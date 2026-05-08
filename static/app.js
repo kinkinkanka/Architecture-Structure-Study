@@ -200,6 +200,7 @@ async function bootApp(username) {
   setupStudyControls();
   setupZoom();
   setupPan();
+  setupResizePanels();
   setupScanNav();
   setupDragSelect();
   setupHighlighter();
@@ -919,6 +920,57 @@ function applyTransform() {
   if (!bw) return;
   bw.style.transform = `translate(${State.panX}px, ${State.panY}px) scale(${State.zoomLevel})`;
   bw.style.transformOrigin = "center center";
+}
+
+function setupResizePanels() {
+  function makeResizable(handleEl, panelEl, getDelta) {
+    if (!handleEl || !panelEl) return;
+    let startX = 0, dragging = false;
+    handleEl.addEventListener("mousedown", e => {
+      e.preventDefault();
+      dragging = true;
+      startX = e.clientX;
+      handleEl.classList.add("dragging");
+      panelEl.style.transition = "none";
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    });
+    document.addEventListener("mousemove", e => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      startX = e.clientX;
+      getDelta(dx);
+    });
+    document.addEventListener("mouseup", () => {
+      if (!dragging) return;
+      dragging = false;
+      handleEl.classList.remove("dragging");
+      panelEl.style.transition = "";
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    });
+  }
+
+  const sidebar = document.getElementById("study-sidebar");
+  makeResizable(
+    document.getElementById("resize-sidebar"), sidebar,
+    dx => {
+      if (sidebar.classList.contains("collapsed")) return;
+      const w = Math.max(160, Math.min(480, sidebar.offsetWidth + dx));
+      sidebar.style.width = w + "px";
+      sidebar.style.minWidth = w + "px";
+    }
+  );
+
+  const annPanel = document.getElementById("scan-ann-panel");
+  makeResizable(
+    document.getElementById("resize-annpanel"), annPanel,
+    dx => {
+      if (annPanel.classList.contains("collapsed")) return;
+      const w = Math.max(160, Math.min(520, annPanel.offsetWidth - dx));
+      annPanel.style.width = w + "px";
+    }
+  );
 }
 
 function setupZoom() {

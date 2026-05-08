@@ -897,6 +897,20 @@ html,body { height:100%; font-family:var(--font); background:var(--bg); color:va
 .scan-ann-panel.collapsed { width:0 !important; border:none; }
 
 .sidebar-toggle-btn { font-size:12px; padding:4px 8px; color:var(--text3); flex-shrink:0; }
+
+/* ===== 리사이즈 핸들 ===== */
+.resize-handle {
+  width: 5px; flex-shrink: 0; cursor: col-resize;
+  background: transparent; position: relative; z-index: 20;
+  transition: background .15s;
+}
+.resize-handle::after {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; left: -4px; right: -4px;
+}
+.resize-handle:hover, .resize-handle.dragging {
+  background: var(--accent);
+}
 .ann-panel-header {
   display:flex; align-items:center; justify-content:space-between;
   padding:10px 14px; font-size:12px; font-weight:700; color:var(--text3);
