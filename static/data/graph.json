@@ -1,0 +1,842 @@
+{
+  "nodes": [
+    {
+      "id": "part1",
+      "label": "구조역학",
+      "type": "part",
+      "color": "#4A90D9",
+      "size": 28
+    },
+    {
+      "id": "part2",
+      "label": "철근콘크리트구조",
+      "type": "part",
+      "color": "#E8644A",
+      "size": 28
+    },
+    {
+      "id": "part3",
+      "label": "강구조",
+      "type": "part",
+      "color": "#5DBB63",
+      "size": 28
+    },
+    {
+      "id": "part4",
+      "label": "건축구조 일반사항",
+      "type": "part",
+      "color": "#9B59B6",
+      "size": 28
+    },
+    {
+      "id": "ch1-1",
+      "label": "힘의 합성과 회전",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "합력",
+        "모멘트",
+        "우력",
+        "바리뇽",
+        "라미",
+        "sin법칙",
+        "벡터",
+        "스칼라"
+      ]
+    },
+    {
+      "id": "ch1-2",
+      "label": "힘의 평형",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "평형조건",
+        "부정정차수",
+        "이동지점",
+        "회전지점",
+        "고정지점",
+        "정정구조",
+        "부정정구조"
+      ]
+    },
+    {
+      "id": "ch1-3",
+      "label": "지점반력",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "반력",
+        "단순보",
+        "캔틸레버",
+        "내민보",
+        "겔버보",
+        "아치",
+        "중첩의 원리"
+      ]
+    },
+    {
+      "id": "ch1-4",
+      "label": "전단력·휨모멘트",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "전단력",
+        "휨모멘트",
+        "SFD",
+        "BMD",
+        "부재력",
+        "내력",
+        "절대최대"
+      ]
+    },
+    {
+      "id": "ch1-5",
+      "label": "트러스 구조해석",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "트러스",
+        "절점법",
+        "절단법",
+        "영부재",
+        "축방향력"
+      ]
+    },
+    {
+      "id": "ch1-6",
+      "label": "단면의 성질",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "단면1차모멘트",
+        "단면2차모멘트",
+        "단면계수",
+        "도심",
+        "중립축"
+      ]
+    },
+    {
+      "id": "ch1-7",
+      "label": "응력과 변형률",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "응력",
+        "변형률",
+        "후크의법칙",
+        "탄성계수",
+        "포아송비",
+        "전단응력"
+      ]
+    },
+    {
+      "id": "ch1-8",
+      "label": "보의 휨변형",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "처짐",
+        "처짐각",
+        "공액보법",
+        "탄성곡선",
+        "변형"
+      ]
+    },
+    {
+      "id": "ch1-9",
+      "label": "기둥",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "기둥",
+        "편심",
+        "핵",
+        "장주",
+        "좌굴",
+        "오일러"
+      ]
+    },
+    {
+      "id": "ch1-10",
+      "label": "부정정구조",
+      "type": "chapter",
+      "color": "#4A90D9",
+      "partId": "part1",
+      "size": 18,
+      "keywords": [
+        "부정정",
+        "변위일치법",
+        "처짐각법",
+        "모멘트분배법",
+        "고정단모멘트",
+        "분배율"
+      ]
+    },
+    {
+      "id": "ch2-1",
+      "label": "RC 해석과 설계의 원칙",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "강도설계법",
+        "하중계수",
+        "강도감소계수",
+        "소요강도",
+        "설계강도",
+        "공칭강도"
+      ]
+    },
+    {
+      "id": "ch2-2",
+      "label": "RC구조해석 일반사항",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "탄성계수",
+        "탄성계수비",
+        "T형보",
+        "유효폭",
+        "철근비",
+        "띠철근",
+        "나선철근"
+      ]
+    },
+    {
+      "id": "ch2-3",
+      "label": "RC 단철근 보 해석",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "단철근",
+        "등가응력블록",
+        "균형철근비",
+        "인장지배",
+        "압축지배",
+        "공칭휨강도"
+      ]
+    },
+    {
+      "id": "ch2-4",
+      "label": "RC 전단설계",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "전단강도",
+        "스터럽",
+        "전단철근",
+        "사인장균열",
+        "복부보강"
+      ]
+    },
+    {
+      "id": "ch2-5",
+      "label": "RC 슬래브",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "슬래브",
+        "1방향",
+        "2방향",
+        "철근간격",
+        "최소두께"
+      ]
+    },
+    {
+      "id": "ch2-6",
+      "label": "RC구조 사용성",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "사용성",
+        "처짐제한",
+        "균열",
+        "내구성",
+        "피복두께"
+      ]
+    },
+    {
+      "id": "ch2-7",
+      "label": "RC구조 철근 상세",
+      "type": "chapter",
+      "color": "#E8644A",
+      "partId": "part2",
+      "size": 18,
+      "keywords": [
+        "정착길이",
+        "이음",
+        "갈고리",
+        "부착",
+        "피복두께",
+        "철근간격"
+      ]
+    },
+    {
+      "id": "ch3-1",
+      "label": "강구조 일반사항",
+      "type": "chapter",
+      "color": "#5DBB63",
+      "partId": "part3",
+      "size": 18,
+      "keywords": [
+        "강재",
+        "SS400",
+        "SM",
+        "허용응력",
+        "항복강도",
+        "인장강도"
+      ]
+    },
+    {
+      "id": "ch3-2",
+      "label": "강구조 접합(I) - 볼트",
+      "type": "chapter",
+      "color": "#5DBB63",
+      "partId": "part3",
+      "size": 18,
+      "keywords": [
+        "고장력볼트",
+        "마찰접합",
+        "지압접합",
+        "볼트강도",
+        "순단면"
+      ]
+    },
+    {
+      "id": "ch3-3",
+      "label": "강구조 접합(II) - 용접",
+      "type": "chapter",
+      "color": "#5DBB63",
+      "partId": "part3",
+      "size": 18,
+      "keywords": [
+        "용접",
+        "맞댐",
+        "필릿",
+        "유효목두께",
+        "용접강도"
+      ]
+    },
+    {
+      "id": "ch3-4",
+      "label": "강구조 부재 설계",
+      "type": "chapter",
+      "color": "#5DBB63",
+      "partId": "part3",
+      "size": 18,
+      "keywords": [
+        "인장재",
+        "압축재",
+        "좌굴",
+        "세장비",
+        "유효좌굴길이",
+        "판좌굴"
+      ]
+    },
+    {
+      "id": "ch4-1",
+      "label": "구조시스템",
+      "type": "chapter",
+      "color": "#9B59B6",
+      "partId": "part4",
+      "size": 18,
+      "keywords": [
+        "구조시스템",
+        "라멘",
+        "전단벽",
+        "내력벽",
+        "코어",
+        "아웃리거"
+      ]
+    },
+    {
+      "id": "ch4-2",
+      "label": "토질 및 기초",
+      "type": "chapter",
+      "color": "#9B59B6",
+      "partId": "part4",
+      "size": 18,
+      "keywords": [
+        "토질",
+        "기초",
+        "독립기초",
+        "복합기초",
+        "지지력",
+        "침하",
+        "말뚝"
+      ]
+    },
+    {
+      "id": "ch4-3",
+      "label": "내진 설계",
+      "type": "chapter",
+      "color": "#9B59B6",
+      "partId": "part4",
+      "size": 18,
+      "keywords": [
+        "내진",
+        "지진하중",
+        "반응수정계수",
+        "밑면전단력",
+        "층간변위",
+        "중요도계수"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "part1",
+      "target": "ch1-1",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-2",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-3",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-4",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-5",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-6",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-7",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-8",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-9",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part1",
+      "target": "ch1-10",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-1",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-2",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-3",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-4",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-5",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-6",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part2",
+      "target": "ch2-7",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part3",
+      "target": "ch3-1",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part3",
+      "target": "ch3-2",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part3",
+      "target": "ch3-3",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part3",
+      "target": "ch3-4",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part4",
+      "target": "ch4-1",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part4",
+      "target": "ch4-2",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "part4",
+      "target": "ch4-3",
+      "type": "contains",
+      "strength": 0.8
+    },
+    {
+      "source": "ch1-1",
+      "target": "ch1-2",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-2",
+      "target": "ch1-3",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-3",
+      "target": "ch1-4",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-4",
+      "target": "ch1-5",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-2",
+      "target": "ch1-5",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-6",
+      "target": "ch1-7",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-7",
+      "target": "ch1-8",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-4",
+      "target": "ch1-8",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-8",
+      "target": "ch1-10",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-7",
+      "target": "ch1-9",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-3",
+      "target": "ch2-1",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-4",
+      "target": "ch2-3",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-6",
+      "target": "ch2-3",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-7",
+      "target": "ch2-1",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-7",
+      "target": "ch2-4",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-8",
+      "target": "ch2-6",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-9",
+      "target": "ch2-2",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch2-1",
+      "target": "ch2-2",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch2-2",
+      "target": "ch2-3",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch2-3",
+      "target": "ch2-4",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch2-3",
+      "target": "ch2-5",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch2-3",
+      "target": "ch2-6",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch2-3",
+      "target": "ch2-7",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-7",
+      "target": "ch3-1",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-6",
+      "target": "ch3-4",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch1-9",
+      "target": "ch3-4",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch3-1",
+      "target": "ch3-2",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch3-1",
+      "target": "ch3-3",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch3-2",
+      "target": "ch3-4",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch3-3",
+      "target": "ch3-4",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch2-1",
+      "target": "ch4-1",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    {
+      "source": "ch4-2",
+      "target": "ch4-3",
+      "type": "prerequisite",
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    {
+      "source": "ch1-3",
+      "target": "ch4-2",
+      "type": "applied_in",
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    }
+  ],
+  "edgeTypes": {
+    "prerequisite": {
+      "color": "#FF6B6B",
+      "label": "선수과목",
+      "dashed": false
+    },
+    "applied_in": {
+      "color": "#4ECDC4",
+      "label": "응용",
+      "dashed": true
+    },
+    "contains": {
+      "color": "#95A5A6",
+      "label": "포함",
+      "dashed": false
+    }
+  }
+}

@@ -1,0 +1,1758 @@
+/* ===================================================
+   건축구조 학습 웹사이트 - 메인 앱 v2
+   =================================================== */
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+// PDF는 항상 고정 스케일로 렌더링 → CSS zoom이 픽셀을 확대하는 게 아니라 이미 렌더된 해상도를 보여줌
+const RENDER_SCALE = 3;
+
+/* ===== 효과음 (Web Audio API) ===== */
+const SFX = {
+  _ctx: null,
+  get ctx() {
+    if (!this._ctx) this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return this._ctx;
+  },
+  play(type) {
+    try {
+      const ctx = this.ctx;
+      if (ctx.state === "suspended") ctx.resume();
+      const recipes = {
+        click:    [{ f:600, d:.06, v:.05, t:"sine" }],
+        nav:      [{ f:440, d:.10, v:.06, t:"sine" }],
+        success:  [{ f:523, d:.12, v:.08, t:"sine" }, { f:659, d:.15, v:.08, t:"sine", delay:.12 }],
+        wrong:    [{ f:220, d:.18, v:.06, t:"sawtooth" }],
+        bookmark: [{ f:880, d:.10, v:.07, t:"sine" }],
+        done:     [{ f:523, d:.10, v:.08, t:"sine" }, { f:659, d:.10, v:.08, t:"sine", delay:.10 }, { f:784, d:.20, v:.08, t:"sine", delay:.20 }],
+        tab:      [{ f:350, d:.08, v:.04, t:"sine" }],
+        open:     [{ f:500, d:.12, v:.05, t:"sine" }],
+        flip:     [{ f:800, d:.04, v:.04, t:"sine" }, { f:400, d:.08, v:.03, t:"sine", delay:.04 }],
+      };
+      const notes = recipes[type] || recipes.click;
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = n.t || "sine";
+        osc.frequency.value = n.f;
+        const t = ctx.currentTime + (n.delay || 0);
+        gain.gain.setValueAtTime(n.v, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
+        osc.start(t); osc.stop(t + n.d);
+      });
+    } catch (_) {}
+  }
+};
+
+/* 모든 버튼에 클릭음 자동 적용 */
+document.addEventListener("click", e => {
+  const btn = e.target.closest("button, .chapter-item, .tab-btn, .quiz-option");
+  if (btn) SFX.play("click");
+});
+
+/* 좌우 화살표 페이지 이동 */
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (!State.pdfDoc) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); SFX.play("flip"); showSpread(State.currentLeftPage + 2); }
+  if (e.key === "ArrowLeft")  { e.preventDefault(); SFX.play("flip"); showSpread(State.currentLeftPage - 2); }
+});
+
+/* ===== 전역 상태 ===== */
+const State = {
+  chapters: [], parts: [], problems: [],
+  currentChapter: null,
+  loggedIn: false, currentUser: null,
+  quizQueue: [], quizIndex: 0,
+  chatHistory: [],
+  graphData: null, selectedGraphNode: null,
+  done:      new Set(JSON.parse(localStorage.getItem("ch_done")      || "[]")),
+  bookmarks: new Set(JSON.parse(localStorage.getItem("ch_bookmarks") || "[]")),
+  quizMode: "card",
+  // 스캔 뷰어 (PDF.js 기반)
+  pdfDoc: null,
+  pdfTotalPages: 0,
+  currentLeftPage: 1,
+  chapterStartPage: 1,
+  chapterEndPage: 1,
+  zoomLevel: 1.0,
+  // 페이지 렌더 캐시
+  pageCache: new Map(),   // pageNum → offscreen HTMLCanvasElement
+  textCache: new Map(),   // pageNum → [{x,y,w,h}] (canvas coords)
+  currentScale: 1,
+  // 주석
+  annotations: JSON.parse(localStorage.getItem("scan_annotations") || "{}"),
+  annPanelChapter: null,
+  // 형광펜
+  highlights: JSON.parse(localStorage.getItem("scan_highlights") || "{}"),
+  panX: 0, panY: 0,   // 뷰어 이동 (transform 기반)
+  hlMode: false,
+  panMode: false,
+  _panStart: null,
+  hlTool: "pen",          // "pen" | "eraser"
+  hlColor: "yellow",
+  hlSnap: true,           // 텍스트 스냅 모드
+  hlFilter: new Set(["yellow","green","pink","blue"]),
+  _hlLivePath: null,
+  _hlLivePoints: [],      // 현재 드로잉 중인 canvas 좌표 (eraser용도 공유)
+  // 드래그 (AI 질문)
+  _drag: null, _pendingCrop: null, _pendingRect: null,
+};
+
+const HL_COLORS = {
+  yellow: { hex: "#FFE600", label: "중요" },
+  green:  { hex: "#00CC44", label: "공식" },
+  pink:   { hex: "#FF5599", label: "암기" },
+  blue:   { hex: "#3399FF", label: "정의" },
+};
+
+function saveProgress() {
+  const doneData = JSON.stringify([...State.done]);
+  const bkData   = JSON.stringify([...State.bookmarks]);
+  localStorage.setItem("ch_done",      doneData);
+  localStorage.setItem("ch_bookmarks", bkData);
+  syncToServer("ch_done",      doneData);
+  syncToServer("ch_bookmarks", bkData);
+}
+function saveAnnotations() {
+  const d = JSON.stringify(State.annotations);
+  localStorage.setItem("scan_annotations", d);
+  syncToServer("scan_annotations", d);
+}
+function saveHighlights() {
+  const d = JSON.stringify(State.highlights);
+  localStorage.setItem("scan_highlights", d);
+  syncToServer("scan_highlights", d);
+}
+
+/* 서버 동기화 (fire-and-forget) */
+async function syncToServer(key, jsonStr) {
+  if (!State.loggedIn) return;
+  try {
+    await fetch(`/api/userdata/${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: jsonStr }),
+    });
+  } catch (_) {}
+}
+
+/* 서버에서 사용자 데이터 로드 */
+async function loadUserDataFromServer() {
+  const keys = ["ch_done", "ch_bookmarks", "scan_annotations", "scan_highlights"];
+  await Promise.all(keys.map(async key => {
+    try {
+      const res  = await fetch(`/api/userdata/${key}`);
+      const { data } = await res.json();
+      if (data !== null) {
+        // 서버 데이터 우선 → localStorage + State 갱신
+        localStorage.setItem(key, data);
+        if (key === "ch_done")
+          State.done      = new Set(JSON.parse(data || "[]"));
+        else if (key === "ch_bookmarks")
+          State.bookmarks = new Set(JSON.parse(data || "[]"));
+        else if (key === "scan_annotations")
+          State.annotations = JSON.parse(data || "{}");
+        else if (key === "scan_highlights")
+          State.highlights  = JSON.parse(data || "{}");
+      } else {
+        // 첫 로그인: 로컬 데이터를 서버에 업로드
+        const local = localStorage.getItem(key);
+        if (local) syncToServer(key, local);
+      }
+    } catch (_) {}
+  }));
+}
+
+/* ===== 초기화 ===== */
+document.addEventListener("DOMContentLoaded", async () => {
+  setupAuthUI();
+
+  // 인증 상태 확인
+  const res  = await fetch("/api/me");
+  const auth = await res.json();
+
+  if (!auth.loggedIn) {
+    document.getElementById("auth-screen").classList.remove("hidden");
+    return;
+  }
+
+  await bootApp(auth.username);
+});
+
+async function bootApp(username) {
+  State.loggedIn   = true;
+  State.currentUser = username;
+
+  // 서버 데이터 로드 후 앱 초기화
+  await loadUserDataFromServer();
+
+  // 헤더 유저 뱃지
+  document.getElementById("user-name-badge").textContent = `👤 ${username}`;
+  document.getElementById("auth-screen").classList.add("hidden");
+
+  setupTabs();
+  await loadData();
+  renderSidebar();
+  renderWelcomeStats();
+  setupStudyControls();
+  setupZoom();
+  setupPan();
+  setupScanNav();
+  setupDragSelect();
+  setupHighlighter();
+  setupAnnotationModal();
+  setupAnnDetail();
+  setupQuizTab();
+  setupChatTab();
+  setupGraphTab();
+  setupModal();
+}
+
+/* ===== 인증 UI ===== */
+function setupAuthUI() {
+  // 탭 전환
+  document.querySelectorAll(".auth-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.auth;
+      document.querySelectorAll(".auth-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("auth-form-login").classList.toggle("hidden",    target !== "login");
+      document.getElementById("auth-form-register").classList.toggle("hidden", target !== "register");
+      document.getElementById("auth-error").textContent = "";
+    });
+  });
+
+  // Enter 키
+  ["auth-username","auth-password"].forEach(id => {
+    document.getElementById(id).addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("btn-do-login").click();
+    });
+  });
+  ["reg-username","reg-password","reg-password2"].forEach(id => {
+    document.getElementById(id).addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("btn-do-register").click();
+    });
+  });
+
+  document.getElementById("btn-do-login").addEventListener("click", async () => {
+    const username = document.getElementById("auth-username").value.trim();
+    const password = document.getElementById("auth-password").value;
+    setAuthError("");
+    const res  = await fetch("/api/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { setAuthError(data.error); return; }
+    await bootApp(data.username);
+  });
+
+  document.getElementById("btn-do-register").addEventListener("click", async () => {
+    const username  = document.getElementById("reg-username").value.trim();
+    const password  = document.getElementById("reg-password").value;
+    const password2 = document.getElementById("reg-password2").value;
+    setAuthError("");
+    if (password !== password2) { setAuthError("비밀번호가 일치하지 않습니다"); return; }
+    const res  = await fetch("/api/register", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { setAuthError(data.error); return; }
+    await bootApp(data.username);
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await fetch("/api/logout", { method: "POST" });
+    State.loggedIn  = false;
+    State.currentUser = null;
+    document.getElementById("auth-screen").classList.remove("hidden");
+    document.getElementById("auth-username").value = "";
+    document.getElementById("auth-password").value = "";
+  });
+}
+
+function setAuthError(msg) {
+  document.getElementById("auth-error").textContent = msg;
+}
+
+/* ===== 탭 ===== */
+function setupTabs() {
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+      btn.classList.add("active");
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      SFX.play("tab");
+      if (tab === "graph" && State.graphData) renderGraph();
+    });
+  });
+}
+
+/* ===== 데이터 로드 ===== */
+async function loadData() {
+  const [chRes, prRes, grRes] = await Promise.all([
+    fetch("/api/chapters"), fetch("/api/problems?limit=2000"), fetch("/api/graph")
+  ]);
+  const chData = await chRes.json();
+  const prData = await prRes.json();
+  State.graphData = await grRes.json();
+  State.chapters = chData.chapters || [];
+  State.parts    = chData.parts    || [];
+  State.problems = prData.problems || [];
+}
+
+/* ===== 사이드바 ===== */
+function renderSidebar() {
+  const list = document.getElementById("chapter-list");
+  list.innerHTML = "";
+  const grouped = {};
+  State.chapters.forEach(ch => {
+    if (!grouped[ch.partId]) grouped[ch.partId] = [];
+    grouped[ch.partId].push(ch);
+  });
+  State.parts.forEach(part => {
+    const chs = grouped[part.id] || [];
+    const group = document.createElement("div");
+    group.className = "part-group";
+    const header = document.createElement("div");
+    header.className = "part-header";
+    header.innerHTML = `<span class="part-dot" style="background:${part.color}"></span><span>${part.title}</span><span class="part-arrow">▾</span>`;
+    header.addEventListener("click", () => { group.classList.toggle("collapsed"); SFX.play("nav"); });
+    const chaptersDiv = document.createElement("div");
+    chaptersDiv.className = "part-chapters";
+    chs.forEach(ch => chaptersDiv.appendChild(makeChapterItem(ch)));
+    group.appendChild(header);
+    group.appendChild(chaptersDiv);
+    list.appendChild(group);
+  });
+
+  document.getElementById("chapter-search").addEventListener("input", e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll(".chapter-item").forEach(el => {
+      el.style.display = el.dataset.title.toLowerCase().includes(q) ? "" : "none";
+    });
+  });
+}
+
+function makeChapterItem(ch) {
+  const div = document.createElement("div");
+  div.className = "chapter-item";
+  div.dataset.chId  = ch.id;
+  div.dataset.title = ch.title;
+  const isDone = State.done.has(ch.id);
+  const isBm   = State.bookmarks.has(ch.id);
+  div.innerHTML = `<span style="flex:1">${ch.title}</span>
+    ${isBm   ? '<span class="chapter-bookmark-mark">★</span>' : ""}
+    ${isDone ? '<span class="chapter-done-mark">✓</span>'     : ""}`;
+  div.addEventListener("click", () => openChapter(ch));
+  return div;
+}
+
+function refreshSidebarItem(chId) {
+  const el = document.querySelector(`.chapter-item[data-ch-id="${chId}"]`);
+  if (!el) return;
+  const ch = State.chapters.find(c => c.id === chId);
+  if (!ch) return;
+  const isDone = State.done.has(chId), isBm = State.bookmarks.has(chId);
+  el.innerHTML = `<span style="flex:1">${ch.title}</span>
+    ${isBm   ? '<span class="chapter-bookmark-mark">★</span>' : ""}
+    ${isDone ? '<span class="chapter-done-mark">✓</span>'     : ""}`;
+}
+
+/* ===== 챕터 열기 ===== */
+function openChapter(ch) {
+  State.currentChapter = ch;
+  SFX.play("open");
+
+  document.querySelectorAll(".chapter-item").forEach(el => {
+    el.classList.remove("active"); el.style.borderLeft = "";
+  });
+  const el = document.querySelector(`.chapter-item[data-ch-id="${ch.id}"]`);
+  if (el) { el.classList.add("active"); el.style.borderLeft = `3px solid ${ch.partColor}`; }
+
+  document.getElementById("study-welcome").classList.add("hidden");
+  document.getElementById("study-content").classList.remove("hidden");
+
+  const badge = document.getElementById("content-part-badge");
+  badge.textContent = ch.partTitle; badge.style.background = ch.partColor;
+  document.getElementById("content-title").textContent = ch.title;
+
+  document.getElementById("check-box").innerHTML = `
+    <div class="check-box-title">CHECK</div>
+    <div class="check-tags">${(ch.check||[]).map(c=>`<span class="check-tag">${c}</span>`).join("")}</div>`;
+
+  const btnBm = document.getElementById("btn-bookmark");
+  const btnDone = document.getElementById("btn-mark-done");
+  btnBm.textContent  = State.bookmarks.has(ch.id) ? "★ 북마크 해제" : "☆ 북마크";
+  btnBm.classList.toggle("active", State.bookmarks.has(ch.id));
+  btnDone.textContent = State.done.has(ch.id) ? "✓ 완료됨" : "✓ 학습 완료";
+  btnDone.classList.toggle("active", State.done.has(ch.id));
+
+  loadChapterScan(ch);
+}
+
+/* ===== 학습 컨트롤 설정 ===== */
+function setupStudyControls() {
+  document.getElementById("btn-bookmark").addEventListener("click", () => {
+    const ch = State.currentChapter; if (!ch) return;
+    if (State.bookmarks.has(ch.id)) State.bookmarks.delete(ch.id);
+    else { State.bookmarks.add(ch.id); SFX.play("bookmark"); }
+    saveProgress(); refreshSidebarItem(ch.id);
+    const btn = document.getElementById("btn-bookmark");
+    btn.textContent = State.bookmarks.has(ch.id) ? "★ 북마크 해제" : "☆ 북마크";
+    btn.classList.toggle("active", State.bookmarks.has(ch.id));
+  });
+
+  document.getElementById("btn-mark-done").addEventListener("click", () => {
+    const ch = State.currentChapter; if (!ch) return;
+    if (State.done.has(ch.id)) State.done.delete(ch.id);
+    else { State.done.add(ch.id); SFX.play("done"); }
+    saveProgress(); refreshSidebarItem(ch.id); renderWelcomeStats();
+    const btn = document.getElementById("btn-mark-done");
+    btn.textContent = State.done.has(ch.id) ? "✓ 완료됨" : "✓ 학습 완료";
+    btn.classList.toggle("active", State.done.has(ch.id));
+  });
+}
+
+/* ===== 스캔 뷰어 (PDF.js 2-페이지 스프레드 + 캐시) ===== */
+async function loadChapterScan(ch) {
+  document.getElementById("scan-ann-overlay").innerHTML = "";
+  document.getElementById("scan-loading").classList.remove("hidden");
+  State.pageCache.clear();
+  State.textCache.clear();
+  State.currentScale = null;
+  State.panX = 0; State.panY = 0; State.zoomLevel = 1.0;
+  applyTransform();
+
+  try {
+    if (!State.pdfDoc) {
+      State.pdfDoc = await pdfjsLib.getDocument("/pdf").promise;
+      State.pdfTotalPages = State.pdfDoc.numPages;
+    }
+    State.chapterStartPage = ch.startPage || 1;
+    State.chapterEndPage   = ch.endPage   || State.pdfTotalPages;
+
+    await showSpread(State.chapterStartPage);
+    State.annPanelChapter = null;
+    renderAnnotationList(null);
+  } catch (err) {
+    console.error("PDF 로드 오류:", err);
+    document.getElementById("scan-page-info").textContent = "PDF 오류";
+  } finally {
+    document.getElementById("scan-loading").classList.add("hidden");
+  }
+}
+
+async function showSpread(leftPageNum) {
+  leftPageNum = Math.max(State.chapterStartPage,
+                Math.min(leftPageNum, State.chapterEndPage));
+  State.currentLeftPage = leftPageNum;
+  const rightPageNum = leftPageNum + 1;
+  const lCanvas = document.getElementById("scan-page-left");
+  const rCanvas = document.getElementById("scan-page-right");
+
+  // ── 캐시 히트 시 즉시 표시 (로딩 없음) ──
+  const lCached = State.pageCache.get(leftPageNum);
+  const rCached = State.pageCache.get(rightPageNum);
+  const rightExists = rightPageNum <= State.chapterEndPage;
+
+  if (lCached) blitCache(lCached, lCanvas, "hl-canvas-left");
+  if (rCached && rightExists) blitCache(rCached, rCanvas, "hl-canvas-right");
+  else if (!rightExists && lCached) renderBlankCanvas(rCanvas, lCanvas);
+
+  if (lCached && (rCached || !rightExists)) {
+    // 둘 다 캐시 → 즉시 완료
+    finishSpreadUI(leftPageNum);
+    preRenderNeighbors(leftPageNum);
+    return;
+  }
+
+  // ── 캐시 미스: 렌더 후 캐시 ──
+  document.getElementById("scan-loading").classList.remove("hidden");
+  try {
+    // 스케일은 챕터 첫 렌더에서만 계산
+    if (!State.currentScale) {
+      State.currentScale = await calcScale(leftPageNum);
+    }
+    const scale = State.currentScale;
+
+    const tasks = [];
+    if (!lCached) tasks.push(renderAndCache(leftPageNum,  lCanvas, scale, "hl-canvas-left"));
+    if (!rCached && rightExists)
+      tasks.push(renderAndCache(rightPageNum, rCanvas, scale, "hl-canvas-right"));
+    else if (!rightExists) renderBlankCanvas(rCanvas, lCanvas);
+    await Promise.all(tasks);
+    // 텍스트 레이어 백그라운드 로드
+    loadPageText(leftPageNum, scale);
+    if (rightExists) loadPageText(rightPageNum, scale);
+  } finally {
+    document.getElementById("scan-loading").classList.add("hidden");
+  }
+
+  finishSpreadUI(leftPageNum);
+  preRenderNeighbors(leftPageNum);
+}
+
+function finishSpreadUI(leftPageNum) {
+  renderPageBadges(State.currentChapter?.id, leftPageNum);
+  drawHighlightsOnPage(State.currentChapter?.id, leftPageNum);
+  const right = Math.min(leftPageNum + 1, State.chapterEndPage);
+  document.getElementById("scan-page-info").textContent = `${leftPageNum}–${right} / ${State.chapterEndPage}`;
+  document.getElementById("scan-page-input").value = leftPageNum;
+  document.getElementById("btn-scan-prev").disabled = leftPageNum <= State.chapterStartPage;
+  document.getElementById("btn-scan-next").disabled = leftPageNum + 2 > State.chapterEndPage;
+}
+
+async function renderAndCache(pageNum, canvasEl, displayScale, hlId) {
+  const page    = await State.pdfDoc.getPage(pageNum);
+  const renderVp  = page.getViewport({ scale: RENDER_SCALE });
+  const displayVp = page.getViewport({ scale: displayScale });
+  const off = document.createElement("canvas");
+  off.width  = Math.round(renderVp.width);
+  off.height = Math.round(renderVp.height);
+  off._cssWidth  = displayVp.width;
+  off._cssHeight = displayVp.height;
+  await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
+  State.pageCache.set(pageNum, off);
+  blitCache(off, canvasEl, hlId);
+}
+
+function blitCache(offscreen, canvasEl, hlId) {
+  const cssW = offscreen._cssWidth  || offscreen.width;
+  const cssH = offscreen._cssHeight || offscreen.height;
+  canvasEl.width  = offscreen.width;
+  canvasEl.height = offscreen.height;
+  canvasEl.style.width  = cssW + "px";
+  canvasEl.style.height = cssH + "px";
+  canvasEl._cssWidth  = cssW;
+  canvasEl._cssHeight = cssH;
+  canvasEl.getContext("2d").drawImage(offscreen, 0, 0);
+  const hl = document.getElementById(hlId);
+  if (hl) {
+    hl.width  = offscreen.width;
+    hl.height = offscreen.height;
+    hl.style.width  = cssW + "px";
+    hl.style.height = cssH + "px";
+    hl._cssWidth  = cssW;
+    hl._cssHeight = cssH;
+  }
+}
+
+async function preRenderNeighbors(leftPageNum) {
+  const displayScale = State.currentScale;
+  if (!displayScale) return;
+  const candidates = [leftPageNum + 2, leftPageNum + 3, leftPageNum - 2, leftPageNum - 1];
+  for (const p of candidates) {
+    if (p < State.chapterStartPage || p > State.chapterEndPage) continue;
+    if (State.pageCache.has(p)) continue;
+    try {
+      const page      = await State.pdfDoc.getPage(p);
+      const renderVp  = page.getViewport({ scale: RENDER_SCALE });
+      const displayVp = page.getViewport({ scale: displayScale });
+      const off = document.createElement("canvas");
+      off.width  = Math.round(renderVp.width);
+      off.height = Math.round(renderVp.height);
+      off._cssWidth  = displayVp.width;
+      off._cssHeight = displayVp.height;
+      await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
+      State.pageCache.set(p, off);
+      loadPageText(p, displayScale);
+    } catch (_) {}
+  }
+}
+
+async function calcScale(pageNum) {
+  const page = await State.pdfDoc.getPage(pageNum);
+  const vp   = page.getViewport({ scale: 1 });
+  const wrap = document.getElementById("scan-wrap");
+  // Height-based scaling: fill as much vertical space as possible
+  const availH = Math.max(300, wrap.clientHeight - 16);
+  const scaleH = availH / vp.height;
+  // Width guard: allow horizontal scroll but don't exceed 2× the width-fit scale
+  const availW = Math.max(200, (wrap.clientWidth - 40) / 2);
+  const scaleW = availW / vp.width;
+  return Math.min(scaleH, scaleW * 1.8);
+}
+
+/* 텍스트 레이어 캐시 (스냅 용도) — 좌표는 CSS(display) 픽셀 기준 */
+async function loadPageText(pageNum, displayScale) {
+  if (State.textCache.has(pageNum)) return;
+  try {
+    const page = await State.pdfDoc.getPage(pageNum);
+    const vp   = page.getViewport({ scale: displayScale });
+    const tc   = await page.getTextContent();
+    const items = [];
+    tc.items.forEach(item => {
+      if (!item.str.trim()) return;
+      const [a,,,,tx, ty] = item.transform;
+      const fontSize = Math.abs(a) * displayScale;
+      const [cx, cy] = vp.convertToViewportPoint(tx, ty);
+      const w = item.width * displayScale;
+      items.push({ x: cx, y: cy - fontSize, w: Math.max(w, 4), h: fontSize * 1.35 });
+    });
+    State.textCache.set(pageNum, items);
+  } catch (_) {}
+}
+
+function renderBlankCanvas(canvasEl, refCanvas) {
+  const cssW = refCanvas._cssWidth  || parseFloat(refCanvas.style.width)  || refCanvas.width;
+  const cssH = refCanvas._cssHeight || parseFloat(refCanvas.style.height) || refCanvas.height;
+  canvasEl.width  = refCanvas.width;
+  canvasEl.height = refCanvas.height;
+  canvasEl.style.width  = cssW + "px";
+  canvasEl.style.height = cssH + "px";
+  canvasEl._cssWidth  = cssW;
+  canvasEl._cssHeight = cssH;
+  const ctx = canvasEl.getContext("2d");
+  ctx.fillStyle = "#e0e0e0";
+  ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+}
+
+function setupScanNav() {
+  document.getElementById("btn-scan-prev").addEventListener("click", () => {
+    SFX.play("flip"); showSpread(State.currentLeftPage - 2);
+  });
+  document.getElementById("btn-scan-next").addEventListener("click", () => {
+    SFX.play("flip"); showSpread(State.currentLeftPage + 2);
+  });
+  document.getElementById("btn-scan-goto").addEventListener("click", () => {
+    const v = parseInt(document.getElementById("scan-page-input").value);
+    if (!isNaN(v)) showSpread(v);
+  });
+  document.getElementById("scan-page-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("btn-scan-goto").click();
+  });
+  document.getElementById("btn-clear-anns").addEventListener("click", () => {
+    const ch = State.currentChapter; if (!ch) return;
+    if (!confirm("이 챕터의 모든 AI 질문 기록을 삭제할까요?")) return;
+    delete State.annotations[ch.id];
+    saveAnnotations();
+    renderAnnotationList(State.annPanelChapter);
+    renderPageBadges(ch.id, State.currentLeftPage);
+  });
+
+  // 사이드바 토글
+  document.getElementById("btn-toggle-sidebar").addEventListener("click", () => {
+    const sb = document.getElementById("study-sidebar");
+    sb.classList.toggle("collapsed");
+    document.getElementById("btn-toggle-sidebar").textContent = sb.classList.contains("collapsed") ? "▷" : "◁";
+  });
+  document.getElementById("btn-toggle-annpanel").addEventListener("click", () => {
+    const ap = document.getElementById("scan-ann-panel");
+    ap.classList.toggle("collapsed");
+    document.getElementById("btn-toggle-annpanel").textContent = ap.classList.contains("collapsed") ? "◁" : "▷";
+  });
+}
+
+/* ===== 드래그 선택 → AI 질문 / 형광펜 / 패닝 ===== */
+function setupDragSelect() {
+  const overlay = document.getElementById("scan-drag-overlay");
+  const wrap    = document.getElementById("scan-wrap");
+  let selBox = null;
+
+  overlay.addEventListener("mousedown", e => {
+    if (e.button !== 0) return;
+    if (State.hlMode)  { hlStartStroke(e); return; }
+    if (State.panMode) {
+      State._panStart = { mx: e.clientX, my: e.clientY, px: State.panX, py: State.panY };
+      overlay.style.cursor = "grabbing";
+      return;
+    }
+    const r = overlay.getBoundingClientRect();
+    State._drag = { x: e.clientX - r.left, y: e.clientY - r.top };
+    if (selBox) { selBox.remove(); selBox = null; }
+  });
+
+  overlay.addEventListener("mousemove", e => {
+    if (State.hlMode)  { hlContinueStroke(e); return; }
+    if (State.panMode && State._panStart) {
+      State.panX = State._panStart.px + (e.clientX - State._panStart.mx);
+      State.panY = State._panStart.py + (e.clientY - State._panStart.my);
+      applyTransform();
+      return;
+    }
+    if (!State._drag) return;
+    const r  = overlay.getBoundingClientRect();
+    const cx = e.clientX - r.left, cy = e.clientY - r.top;
+    const d  = State._drag;
+    if (!selBox) {
+      selBox = document.createElement("div");
+      selBox.className = "drag-sel-box";
+      document.getElementById("scan-book-wrap").appendChild(selBox);
+    }
+    Object.assign(selBox.style, {
+      left:   Math.min(d.x, cx) + "px",
+      top:    Math.min(d.y, cy) + "px",
+      width:  Math.abs(cx - d.x) + "px",
+      height: Math.abs(cy - d.y) + "px",
+    });
+  });
+
+  overlay.addEventListener("mouseup", e => {
+    if (State.hlMode) { hlFinishStroke(); return; }
+    if (State.panMode) {
+      State._panStart = null;
+      overlay.style.cursor = "grab";
+      return;
+    }
+    if (!State._drag) return;
+    const r  = overlay.getBoundingClientRect();
+    const x2 = e.clientX - r.left, y2 = e.clientY - r.top;
+    const d  = State._drag;
+    State._drag = null;
+    if (selBox) { selBox.remove(); selBox = null; }
+
+    const w = Math.abs(x2 - d.x), h = Math.abs(y2 - d.y);
+    if (w < 15 || h < 15) return;
+
+    const totalW = r.width, totalH = r.height;
+    const relRect = {
+      x: Math.min(d.x, x2) / totalW,
+      y: Math.min(d.y, y2) / totalH,
+      w: w / totalW,
+      h: h / totalH,
+    };
+    const crop = cropSpreadRegion(relRect);
+    State._pendingCrop = crop;
+    State._pendingRect = relRect;
+    showAnnotationQueryModal(crop);
+  });
+
+  overlay.addEventListener("mouseleave", () => {
+    if (State.hlMode) hlFinishStroke();
+    if (State.panMode) { State._panStart = null; return; }
+    State._drag = null;
+    if (selBox) { selBox.remove(); selBox = null; }
+  });
+}
+
+/* 두 페이지 스프레드에서 선택 영역 크롭 */
+function cropSpreadRegion(rel) {
+  const lc  = document.getElementById("scan-page-left");
+  const rc  = document.getElementById("scan-page-right");
+  const div = document.querySelector(".scan-page-divider");
+
+  const lw = lc.offsetWidth, lh = lc.offsetHeight;
+  const rw = rc.offsetWidth;
+  const dw = div ? div.offsetWidth : 3;
+  const totalW = lw + dw + rw;
+
+  // 합성 캔버스 (CSS 픽셀 기준, drawImage가 자동 스케일)
+  const comp = document.createElement("canvas");
+  comp.width  = totalW;
+  comp.height = lh;
+  const ctx = comp.getContext("2d");
+  ctx.drawImage(lc, 0, 0, lw, lh);
+  ctx.drawImage(rc, lw + dw, 0, rw, lh);
+
+  const cx = Math.round(rel.x * totalW);
+  const cy = Math.round(rel.y * lh);
+  const cw = Math.max(8, Math.round(rel.w * totalW));
+  const ch = Math.max(8, Math.round(rel.h * lh));
+
+  const crop = document.createElement("canvas");
+  crop.width  = cw;
+  crop.height = ch;
+  crop.getContext("2d").drawImage(comp, cx, cy, cw, ch, 0, 0, cw, ch);
+  return crop.toDataURL("image/png");
+}
+
+/* ===== 주석 모달 ===== */
+function setupAnnotationModal() {
+  const modal  = document.getElementById("ann-query-modal");
+  const cancel = () => modal.classList.add("hidden");
+  document.getElementById("btn-ann-cancel").addEventListener("click", cancel);
+  document.getElementById("btn-ann-cancel2").addEventListener("click", cancel);
+  modal.addEventListener("click", e => { if (e.target === modal) cancel(); });
+
+  document.getElementById("btn-ann-submit").addEventListener("click", async () => {
+    const question = document.getElementById("ann-query-input").value.trim();
+    const crop     = State._pendingCrop;
+    const relRect  = State._pendingRect;
+    if (!crop || !relRect) return;
+
+    const submitBtn = document.getElementById("btn-ann-submit");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "AI 답변 중...";
+    document.getElementById("ann-query-input").disabled = true;
+
+    try {
+      const res  = await fetch("/api/ask-vision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: crop, question }),
+      });
+      const { answer, error } = await res.json();
+      if (error) throw new Error(error);
+
+      const ch = State.currentChapter;
+      if (!State.annotations[ch.id]) State.annotations[ch.id] = [];
+      const ann = {
+        id:       "ann_" + Date.now(),
+        leftPage: State.currentLeftPage,
+        rx: relRect.x, ry: relRect.y, rw: relRect.w, rh: relRect.h,
+        question: question || "이 내용을 설명해주세요.",
+        answer,
+        crop,
+        timestamp: new Date().toISOString(),
+      };
+      State.annotations[ch.id].push(ann);
+      saveAnnotations();
+
+      modal.classList.add("hidden");
+      renderAnnotationList(State.annPanelChapter);
+      renderPageBadges(ch.id, State.currentLeftPage);
+      SFX.play("success");
+    } catch (err) {
+      alert("AI 오류: " + err.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "AI에게 질문 →";
+      document.getElementById("ann-query-input").disabled = false;
+    }
+  });
+}
+
+function showAnnotationQueryModal(cropDataUrl) {
+  document.getElementById("ann-query-preview").src = cropDataUrl;
+  document.getElementById("ann-query-input").value = "";
+  document.getElementById("ann-query-modal").classList.remove("hidden");
+  document.getElementById("ann-query-input").focus();
+}
+
+/* ===== 주석 렌더링 ===== */
+function renderPageBadges(chId, leftPageNum) {
+  const overlay = document.getElementById("scan-ann-overlay");
+  overlay.innerHTML = "";
+  if (!chId) return;
+  const anns = (State.annotations[chId] || []).filter(a => a.leftPage === leftPageNum);
+  anns.forEach((ann, i) => {
+    const badge = document.createElement("div");
+    badge.className = "ann-badge";
+    badge.textContent = i + 1;
+    // rx,ry는 스프레드 전체 기준 상대 좌표
+    badge.style.left = (ann.rx + ann.rw / 2) * 100 + "%";
+    badge.style.top  = (ann.ry + ann.rh / 2) * 100 + "%";
+    badge.addEventListener("click", e => { e.stopPropagation(); showAnnPopup(ann, badge); });
+    overlay.appendChild(badge);
+  });
+}
+
+function showAnnPopup(ann, anchor) {
+  document.querySelectorAll(".ann-popup").forEach(p => p.remove());
+  const popup = document.createElement("div");
+  popup.className = "ann-popup";
+  popup.innerHTML = `
+    <button class="ann-popup-close">✕</button>
+    <div class="ann-popup-q">Q. ${escHtml(ann.question)}</div>
+    <div class="ann-popup-a">${escHtml(ann.answer)}</div>`;
+  popup.querySelector(".ann-popup-close").addEventListener("click", () => popup.remove());
+  document.body.appendChild(popup);
+
+  const rect = anchor.getBoundingClientRect();
+  popup.style.top  = (rect.bottom + 8) + "px";
+  popup.style.left = Math.min(rect.left, window.innerWidth - 340) + "px";
+  document.addEventListener("click", () => popup.remove(), { once: true, capture: true });
+}
+
+function renderAnnotationList(filterChId) {
+  State.annPanelChapter = filterChId ?? State.annPanelChapter;
+
+  // 챕터 탭 렌더
+  const tabsEl = document.getElementById("ann-chapter-tabs");
+  const chsWithAnns = State.chapters.filter(ch => (State.annotations[ch.id]||[]).length > 0);
+  tabsEl.innerHTML = `<button class="ann-ch-tab ${!State.annPanelChapter ? "active":""}" data-ch="">전체</button>` +
+    chsWithAnns.map(ch => {
+      const cnt = (State.annotations[ch.id]||[]).length;
+      return `<button class="ann-ch-tab ${State.annPanelChapter===ch.id?"active":""}" data-ch="${ch.id}">${ch.title} <span class="ann-cnt">(${cnt})</span></button>`;
+    }).join("");
+  tabsEl.querySelectorAll(".ann-ch-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.annPanelChapter = btn.dataset.ch || null;
+      renderAnnotationList(State.annPanelChapter);
+    });
+  });
+
+  // 표시할 주석 수집
+  const list = document.getElementById("ann-list");
+  let entries = []; // { ann, chId, chTitle }
+  const chFilter = State.annPanelChapter;
+  const targets = chFilter
+    ? State.chapters.filter(c => c.id === chFilter)
+    : chsWithAnns;
+
+  targets.forEach(ch => {
+    (State.annotations[ch.id]||[]).forEach(ann => entries.push({ ann, chId: ch.id, chTitle: ch.title }));
+  });
+
+  if (!entries.length) {
+    list.innerHTML = '<p class="ann-empty">기록된 AI 질문이 없습니다</p>';
+    return;
+  }
+
+  list.innerHTML = entries.map(({ ann, chId, chTitle }, i) => `
+    <div class="ann-card" data-ann-idx="${i}" style="cursor:pointer">
+      <div class="ann-card-head">
+        <div class="ann-badge-sm">${i + 1}</div>
+        <div class="ann-card-q">${escHtml(ann.question)}</div>
+        <div class="ann-card-page">p.${ann.leftPage||"?"}</div>
+      </div>
+      ${!chFilter ? `<div style="padding:2px 10px 4px;font-size:10px;color:var(--text3);background:var(--bg)">${escHtml(chTitle)}</div>` : ""}
+      <img class="ann-card-crop" src="${ann.crop}" alt="">
+      <div class="ann-card-ans">${escHtml(ann.answer)}</div>
+    </div>`).join("");
+
+  list.querySelectorAll(".ann-card").forEach((card, i) => {
+    card.addEventListener("click", () => showAnnDetail(entries[i].ann));
+  });
+}
+
+/* ===== transform 기반 뷰어 이동/줌 ===== */
+function applyTransform() {
+  const bw = document.getElementById("scan-book-wrap");
+  if (!bw) return;
+  bw.style.transform = `translate(${State.panX}px, ${State.panY}px) scale(${State.zoomLevel})`;
+  bw.style.transformOrigin = "center center";
+}
+
+function setupZoom() {
+  const wrap = document.getElementById("scan-wrap");
+  wrap.addEventListener("wheel", e => {
+    if (!State.pdfDoc) return;
+    e.preventDefault();
+    const factor = Math.pow(1.06, -e.deltaY / 100);
+    const newZoom = Math.max(0.3, Math.min(5.0, State.zoomLevel * factor));
+
+    // 커서 위치 기준으로 줌 (커서 아래 콘텐츠가 고정)
+    const bw   = document.getElementById("scan-book-wrap");
+    const bRect = bw.getBoundingClientRect();
+    const dx = e.clientX - (bRect.left + bRect.width  / 2);
+    const dy = e.clientY - (bRect.top  + bRect.height / 2);
+
+    State.panX += dx * (1 - newZoom / State.zoomLevel);
+    State.panY += dy * (1 - newZoom / State.zoomLevel);
+    State.zoomLevel = newZoom;
+    applyTransform();
+  }, { passive: false });
+}
+
+/* ===== 휠 클릭 & 이동 모드 패닝 (transform 기반, XY 완전 자유) ===== */
+function setupPan() {
+  const wrap = document.getElementById("scan-wrap");
+  let panStart = null;
+
+  function startPan(mx, my) {
+    panStart = { mx, my, px: State.panX, py: State.panY };
+  }
+  function movePan(mx, my) {
+    if (!panStart) return;
+    State.panX = panStart.px + (mx - panStart.mx);
+    State.panY = panStart.py + (my - panStart.my);
+    applyTransform();
+  }
+  function endPan() { panStart = null; }
+
+  // 휠 클릭 패닝 (항상 사용 가능)
+  document.addEventListener("mousedown", e => {
+    if (e.button !== 1) return;
+    e.preventDefault();
+    const wr = wrap.getBoundingClientRect();
+    if (e.clientX < wr.left || e.clientX > wr.right || e.clientY < wr.top || e.clientY > wr.bottom) return;
+    startPan(e.clientX, e.clientY);
+    wrap.style.cursor = "grabbing";
+  });
+  document.addEventListener("mousemove", e => {
+    if (e.buttons & 4) movePan(e.clientX, e.clientY);  // 휠 버튼 지속 체크
+  });
+  document.addEventListener("mouseup", e => {
+    if (e.button !== 1) return;
+    endPan();
+    wrap.style.cursor = "";
+  });
+  wrap.addEventListener("mousedown", e => { if (e.button === 1) e.preventDefault(); });
+}
+
+/* ===== 마크다운 렌더 ===== */
+function renderMarkdown(text) {
+  if (!text) return "";
+  try { return marked.parse(String(text)); }
+  catch (_) { return escHtml(String(text)).replace(/\n/g, "<br>"); }
+}
+
+/* ===== 형광펜 ===== */
+function setupHighlighter() {
+  document.getElementById("btn-tool-select").addEventListener("click", () => setToolMode("select"));
+  document.getElementById("btn-tool-hl").addEventListener("click",     () => setToolMode("hl"));
+  document.getElementById("btn-tool-pan").addEventListener("click",    () => setToolMode("pan"));
+
+  // 색상 선택
+  document.querySelectorAll(".hl-color-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.hlColor = btn.dataset.color;
+      State.hlTool  = "pen";
+      document.querySelectorAll(".hl-color-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("btn-hl-eraser")?.classList.remove("active");
+    });
+  });
+
+  // 지우개
+  document.getElementById("btn-hl-eraser").addEventListener("click", () => {
+    State.hlTool = State.hlTool === "eraser" ? "pen" : "eraser";
+    document.getElementById("btn-hl-eraser").classList.toggle("active", State.hlTool === "eraser");
+    document.querySelectorAll(".hl-color-btn").forEach(b => b.classList.toggle("active",
+      b.dataset.color === State.hlColor && State.hlTool !== "eraser"));
+  });
+
+  // 스냅 토글
+  document.getElementById("btn-hl-snap").addEventListener("click", () => {
+    State.hlSnap = !State.hlSnap;
+    document.getElementById("btn-hl-snap").classList.toggle("active", State.hlSnap);
+  });
+
+  // 필터
+  document.querySelectorAll(".hl-flt-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const c = btn.dataset.color;
+      document.querySelectorAll(".hl-flt-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      State.hlFilter = c === "all" ? new Set(Object.keys(HL_COLORS)) : new Set([c]);
+      drawHighlightsOnPage(State.currentChapter?.id, State.currentLeftPage);
+    });
+  });
+
+  // 취소
+  document.getElementById("btn-hl-undo").addEventListener("click", () => {
+    const ch = State.currentChapter; if (!ch) return;
+    const pd = State.highlights?.[ch.id]?.[State.currentLeftPage];
+    if (!pd) return;
+    for (const side of ["right","left"]) {
+      if (pd[side]?.length) { pd[side].pop(); break; }
+    }
+    saveHighlights();
+    drawHighlightsOnPage(ch.id, State.currentLeftPage);
+  });
+
+  // 전체 지우기
+  document.getElementById("btn-hl-clear").addEventListener("click", () => {
+    const ch = State.currentChapter; if (!ch) return;
+    if (!confirm("이 페이지의 모든 형광펜을 지울까요?")) return;
+    if (State.highlights[ch.id]) delete State.highlights[ch.id][State.currentLeftPage];
+    saveHighlights();
+    drawHighlightsOnPage(ch.id, State.currentLeftPage);
+  });
+}
+
+function setToolMode(mode) {
+  // mode: "select" | "hl" | "pan"
+  State.hlMode  = mode === "hl";
+  State.panMode = mode === "pan";
+  if (!State.hlMode) State.hlTool = "pen";
+
+  const overlay = document.getElementById("scan-drag-overlay");
+  overlay.style.cursor = mode === "pan" ? "grab" : "crosshair";
+
+  document.getElementById("btn-tool-select").classList.toggle("active", mode === "select");
+  document.getElementById("btn-tool-hl").classList.toggle("active",     mode === "hl");
+  document.getElementById("btn-tool-pan").classList.toggle("active",    mode === "pan");
+
+  ["hl-colors","hl-legend","hl-filter-wrap","hl-actions"].forEach(id =>
+    document.getElementById(id).classList.toggle("hidden", mode !== "hl"));
+
+  const hints = {
+    select: "💡 드래그 → AI 질문",
+    hl:     "🖊 드래그하여 형광펜 표시 / 지우개 선택 후 드래그로 삭제",
+    pan:    "✋ 드래그하여 페이지 이동",
+  };
+  document.getElementById("scan-drag-hint").textContent = hints[mode] || hints.select;
+}
+
+/* 형광펜 그리기 */
+function hlStartStroke(e) {
+  State._hlLivePoints = [];
+  const info = hlGetCanvasCoords(e.clientX, e.clientY);
+  if (!info) return;
+  State._hlLivePath = { tool: State.hlTool, color: State.hlColor, side: info.side };
+  State._hlLivePoints = [{ x: info.x, y: info.y }];
+}
+
+function hlContinueStroke(e) {
+  if (!State._hlLivePath) return;
+  const info = hlGetCanvasCoords(e.clientX, e.clientY);
+  if (!info || info.side !== State._hlLivePath.side) return;
+  State._hlLivePoints.push({ x: info.x, y: info.y });
+
+  const hlId = info.side === "left" ? "hl-canvas-left" : "hl-canvas-right";
+  const canvas = document.getElementById(hlId);
+  const ctx = canvas.getContext("2d");
+
+  if (State.hlTool === "eraser") {
+    // 지우개: 현재 좌표 실시간 preview (빨간 점)
+    redrawHlCanvas(canvas, State.currentChapter?.id, State.currentLeftPage, info.side);
+    hlDrawEraserPreview(ctx, State._hlLivePoints);
+  } else {
+    // 펜: 라이브 획 preview
+    redrawHlCanvas(canvas, State.currentChapter?.id, State.currentLeftPage, info.side);
+    hlDrawLiveLine(ctx, State._hlLivePoints, State.hlColor);
+  }
+}
+
+function hlFinishStroke() {
+  const path = State._hlLivePath;
+  const pts  = State._hlLivePoints;
+  State._hlLivePath = null;
+  State._hlLivePoints = [];
+
+  if (!path || pts.length < 2) return;
+  const ch = State.currentChapter; if (!ch) return;
+
+  if (path.tool === "eraser") {
+    // 지우개: 교차하는 획 제거
+    hlEraseIntersecting(ch.id, path.side, pts);
+  } else {
+    // 펜: 스냅 또는 freehand 저장
+    const entry = hlBuildEntry(path.side, path.color, pts);
+    if (!State.highlights[ch.id]) State.highlights[ch.id] = {};
+    if (!State.highlights[ch.id][State.currentLeftPage])
+      State.highlights[ch.id][State.currentLeftPage] = { left:[], right:[] };
+    State.highlights[ch.id][State.currentLeftPage][path.side].push(entry);
+  }
+  saveHighlights();
+  drawHighlightsOnPage(ch.id, State.currentLeftPage);
+}
+
+function hlBuildEntry(side, color, points) {
+  // 텍스트 스냅 모드: 드로잉 영역과 겹치는 텍스트 라인을 사각형으로 변환
+  if (State.hlSnap) {
+    const pageNum = side === "left" ? State.currentLeftPage : State.currentLeftPage + 1;
+    const textItems = State.textCache.get(pageNum);
+    if (textItems?.length) {
+      const minX = Math.min(...points.map(p => p.x));
+      const maxX = Math.max(...points.map(p => p.x));
+      const minY = Math.min(...points.map(p => p.y));
+      const maxY = Math.max(...points.map(p => p.y));
+      const lc   = document.getElementById("scan-page-left");
+      const cssW = lc?._cssWidth || parseFloat(lc?.style.width) || lc?.width || 600;
+      const lw   = cssW * 0.025;
+      const padY = lw;
+
+      // 드로잉 Y 범위와 겹치는 텍스트 아이템 수집
+      const hit = textItems.filter(ti =>
+        ti.y < maxY + padY && ti.y + ti.h > minY - padY &&
+        ti.x < maxX + 10   && ti.x + ti.w > minX - 10
+      );
+      if (hit.length > 0) {
+        // 라인 별 그룹 (Y 기준 ±4px)
+        const lines = [];
+        hit.forEach(ti => {
+          let found = lines.find(l => Math.abs(l.y - ti.y) < ti.h * 0.5);
+          if (found) {
+            found.x1 = Math.min(found.x1, ti.x);
+            found.x2 = Math.max(found.x2, ti.x + ti.w);
+            found.y1 = Math.min(found.y1, ti.y);
+            found.y2 = Math.max(found.y2, ti.y + ti.h);
+            found.y  = found.y1;
+          } else {
+            lines.push({ y: ti.y, x1: ti.x, x2: ti.x + ti.w, y1: ti.y, y2: ti.y + ti.h });
+          }
+        });
+        return {
+          type: "rects",
+          color,
+          rects: lines.map(l => ({ x: l.x1 - 2, y: l.y1 - 2, w: l.x2 - l.x1 + 4, h: l.y2 - l.y1 + 4 })),
+        };
+      }
+    }
+  }
+  // freehand fallback
+  return { type: "path", color, points };
+}
+
+/* 지우개: 스트로크 포인트와 가까운 획 제거 */
+function hlEraseIntersecting(chId, side, eraserPts) {
+  const pd = State.highlights?.[chId]?.[State.currentLeftPage]?.[side];
+  if (!pd) return;
+  const lc = document.getElementById("scan-page-left");
+  const cssW = lc?._cssWidth || parseFloat(lc?.style.width) || lc?.width || 600;
+  const radius = cssW * 0.04;
+  State.highlights[chId][State.currentLeftPage][side] = pd.filter(entry => {
+    const entryPts = entry.type === "rects"
+      ? entry.rects.flatMap(r => [
+          {x:r.x,y:r.y},{x:r.x+r.w,y:r.y},{x:r.x,y:r.y+r.h},{x:r.x+r.w,y:r.y+r.h}
+        ])
+      : entry.points || [];
+    return !entryPts.some(pp =>
+      eraserPts.some(ep => Math.hypot(pp.x - ep.x, pp.y - ep.y) < radius)
+    );
+  });
+}
+
+// 좌표는 CSS(display) 픽셀 기준 — RENDER_SCALE과 무관하게 일관성 유지
+function hlGetCanvasCoords(clientX, clientY) {
+  for (const side of ["left","right"]) {
+    const c = document.getElementById(side === "left" ? "scan-page-left" : "scan-page-right");
+    const r = c.getBoundingClientRect();
+    if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) {
+      return { side, x: clientX - r.left, y: clientY - r.top }; // CSS 공간
+    }
+  }
+  return null;
+}
+
+function drawHighlightsOnPage(chId, leftPage) {
+  ["left","right"].forEach(side => {
+    const canvas = document.getElementById(side === "left" ? "hl-canvas-left" : "hl-canvas-right");
+    if (canvas) redrawHlCanvas(canvas, chId, leftPage, side);
+  });
+}
+
+function redrawHlCanvas(canvas, chId, leftPage, side) {
+  const ctx  = canvas.getContext("2d");
+  const cssW = canvas._cssWidth || parseFloat(canvas.style.width) || canvas.width;
+  const ratio = canvas.width / cssW;  // physical/css
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.scale(ratio, ratio);  // draw in CSS coords
+  const entries = State.highlights?.[chId]?.[leftPage]?.[side] || [];
+  entries.forEach(entry => {
+    if (!State.hlFilter.has(entry.color)) return;
+    hlRenderEntry(ctx, entry, cssW);
+  });
+  ctx.restore();
+}
+
+function hlRenderEntry(ctx, entry, cssW) {
+  // ctx는 이미 CSS 좌표계로 scale된 상태 (redrawHlCanvas에서 설정)
+  const width = cssW || ctx.canvas.width;
+  const color = HL_COLORS[entry.color]?.hex || "#FFE600";
+  ctx.save();
+  ctx.globalAlpha = 0.45;
+  ctx.globalCompositeOperation = "multiply";
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+
+  if (entry.type === "rects") {
+    entry.rects.forEach(r => ctx.fillRect(r.x, r.y, r.w, r.h));
+  } else {
+    if (!entry.points || entry.points.length < 2) { ctx.restore(); return; }
+    const lw = width * 0.025 || 12;
+    ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(entry.points[0].x, entry.points[0].y);
+    entry.points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function hlDrawLiveLine(ctx, points, color) {
+  if (points.length < 2) return;
+  const cssW  = ctx.canvas._cssWidth || parseFloat(ctx.canvas.style.width) || ctx.canvas.width;
+  const ratio = ctx.canvas.width / cssW;
+  const lw = cssW * 0.025 || 12;
+  ctx.save();
+  ctx.scale(ratio, ratio);
+  ctx.globalAlpha = 0.45;
+  ctx.globalCompositeOperation = "multiply";
+  ctx.strokeStyle = HL_COLORS[color]?.hex || "#FFE600";
+  ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.stroke();
+  ctx.restore();
+}
+
+function hlDrawEraserPreview(ctx, points) {
+  if (!points.length) return;
+  const cssW  = ctx.canvas._cssWidth || parseFloat(ctx.canvas.style.width) || ctx.canvas.width;
+  const ratio = ctx.canvas.width / cssW;
+  const radius = cssW * 0.04 || 20;
+  const last = points[points.length - 1];
+  ctx.save();
+  ctx.scale(ratio, ratio);
+  ctx.globalAlpha = 0.5;
+  ctx.strokeStyle = "#cc0000";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(last.x, last.y, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ===== 주석 확대 모달 ===== */
+function setupAnnDetail() {
+  document.getElementById("btn-ann-detail-close").addEventListener("click", () => {
+    document.getElementById("ann-detail-modal").classList.add("hidden");
+  });
+  document.getElementById("ann-detail-modal").addEventListener("click", e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.add("hidden");
+  });
+}
+
+function showAnnDetail(ann) {
+  document.getElementById("ann-detail-title").textContent = `Q. ${ann.question}`;
+  document.getElementById("ann-detail-crop").src = ann.crop;
+  const ansEl = document.getElementById("ann-detail-answer");
+  ansEl.innerHTML = renderMarkdown(ann.answer);
+  if (window.renderMathInElement) {
+    renderMathInElement(ansEl, {
+      delimiters: [{ left:"$$", right:"$$", display:true }, { left:"$", right:"$", display:false }],
+      throwOnError: false,
+    });
+  }
+  document.getElementById("ann-detail-modal").classList.remove("hidden");
+}
+
+function renderWelcomeStats() {
+  const el = document.getElementById("welcome-stats");
+  if (!el) return;
+  const total = State.chapters.length;
+  const done  = State.done.size;
+  const pct   = total ? Math.round((done / total) * 100) : 0;
+  el.innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">전체 챕터</div></div>
+    <div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">완료 챕터</div></div>
+    <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-label">진도율</div></div>
+    <div class="stat-card"><div class="stat-num">${State.bookmarks.size}</div><div class="stat-label">북마크</div></div>`;
+}
+
+/* ===== 문제풀기 탭 ===== */
+function setupQuizTab() {
+  // 챕터 필터 옵션
+  const sel = document.getElementById("quiz-chapter-filter");
+  State.chapters.forEach(ch => {
+    const opt = document.createElement("option");
+    opt.value = ch.id;
+    opt.textContent = `${ch.partTitle} › ${ch.title}`;
+    sel.appendChild(opt);
+  });
+
+  // 모드 토글
+  document.querySelectorAll(".btn-mode").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".btn-mode").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      State.quizMode = btn.dataset.mode;
+      if (State.quizMode === "list") {
+        document.getElementById("quiz-card-mode").classList.add("hidden");
+        document.getElementById("quiz-list-mode").classList.remove("hidden");
+        renderProblemList();
+      } else {
+        document.getElementById("quiz-list-mode").classList.add("hidden");
+        document.getElementById("quiz-card-mode").classList.remove("hidden");
+      }
+    });
+  });
+
+  // 챕터 필터 변경 시 목록 갱신
+  sel.addEventListener("change", () => {
+    if (State.quizMode === "list") renderProblemList();
+  });
+
+  // 시작
+  document.getElementById("btn-start-quiz").addEventListener("click", startCardQuiz);
+  document.getElementById("btn-show-answer").addEventListener("click", showQuizAnswer);
+  document.getElementById("btn-next-question").addEventListener("click", nextQuestion);
+  document.getElementById("btn-quiz-again").addEventListener("click", startCardQuiz);
+}
+
+/* OCR 깨진 문제 판별 — 한글 비율 20% 미만이면 판독 불가 */
+function isReadableProblem(p) {
+  const text = (p.question || '') + (Array.isArray(p.options) ? p.options.join('') : '');
+  if (text.length < 10) return false;
+  const korean = (text.match(/[가-힣]/g) || []).length;
+  // 특수 OCR 오염 문자 비율
+  const junk   = (text.match(/[九令牛計帙積®©⊕⊙〒]/g) || []).length;
+  return (korean / text.length) >= 0.15 && (junk / text.length) < 0.04;
+}
+
+function filteredProblems() {
+  const chId = document.getElementById("quiz-chapter-filter").value;
+  const base = chId ? State.problems.filter(p => p.chapterId === chId) : State.problems;
+  return base.filter(isReadableProblem);
+}
+
+/* ── 카드 퀴즈 ── */
+function startCardQuiz() {
+  const probs = filteredProblems();
+  if (!probs.length) { alert("해당 챕터에 문제가 없습니다."); return; }
+  State.quizQueue = shuffle([...probs]).slice(0, 20);
+  State.quizIndex = 0;
+
+  document.getElementById("quiz-start-screen").classList.add("hidden");
+  document.getElementById("quiz-done-screen").classList.add("hidden");
+  document.getElementById("quiz-card").classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = State.quizQueue[State.quizIndex];
+  if (!q) return;
+  const total = State.quizQueue.length;
+  const pct   = Math.round((State.quizIndex / total) * 100);
+
+  document.getElementById("quiz-progress-text").textContent = `${State.quizIndex + 1} / ${total}`;
+  document.getElementById("quiz-progress-bar").style.width  = pct + "%";
+  document.getElementById("quiz-counter").textContent = `${State.quizIndex + 1} / ${total}`;
+
+  const tag = document.getElementById("quiz-chapter-tag");
+  tag.textContent = q.chapterTitle || "";
+  tag.style.background = q.partColor || "#888";
+  document.getElementById("quiz-num-label").textContent = `문제 ${q.num || state.quizIndex + 1}`;
+
+  document.getElementById("quiz-question").textContent = cleanText(q.question);
+  document.getElementById("quiz-answer-box").classList.add("hidden");
+  document.getElementById("btn-show-answer").classList.remove("hidden");
+  document.getElementById("btn-next-question").classList.add("hidden");
+
+  // 선택지
+  const optDiv = document.getElementById("quiz-options");
+  optDiv.innerHTML = "";
+  const nums = ["①","②","③","④"];
+  const options = q.options || [];
+  const correctIdx = extractCorrectIdx(q.answer);
+
+  if (options.length) {
+    options.slice(0, 4).forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option";
+      btn.innerHTML = `<span class="option-num">${nums[i]}</span><span>${cleanText(opt)}</span>`;
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        // 모든 옵션 비활성화
+        optDiv.querySelectorAll(".quiz-option").forEach(b => b.disabled = true);
+        if (correctIdx !== null) {
+          btn.classList.add(i === correctIdx ? "correct" : "wrong");
+          if (i === correctIdx) optDiv.querySelectorAll(".quiz-option")[correctIdx].classList.add("correct");
+          SFX.play(i === correctIdx ? "success" : "wrong");
+        } else {
+          btn.classList.add("selected");
+        }
+        showQuizAnswer();
+      });
+      optDiv.appendChild(btn);
+    });
+  }
+}
+
+function extractCorrectIdx(answerText) {
+  if (!answerText) return null;
+  const m = answerText.match(/답\s*[：:]\s*([①②③④])/);
+  if (m) return ["①","②","③","④"].indexOf(m[1]);
+  const m2 = answerText.match(/답\s*[：:]\s*(\d)/);
+  if (m2) { const n = parseInt(m2[1]); if (n >= 1 && n <= 4) return n - 1; }
+  return null;
+}
+
+function showQuizAnswer() {
+  const q = State.quizQueue[State.quizIndex];
+  if (!q) return;
+  const correctIdx = extractCorrectIdx(q.answer);
+  // 정답 옵션 하이라이트
+  if (correctIdx !== null) {
+    const opts = document.getElementById("quiz-options").querySelectorAll(".quiz-option");
+    if (opts[correctIdx]) opts[correctIdx].classList.add("correct");
+  }
+  document.getElementById("quiz-options").querySelectorAll(".quiz-option").forEach(b => b.disabled = true);
+  document.getElementById("quiz-answer-text").textContent = cleanText(q.answer || "해설 없음");
+  document.getElementById("quiz-answer-box").classList.remove("hidden");
+  document.getElementById("btn-show-answer").classList.add("hidden");
+  document.getElementById("btn-next-question").classList.remove("hidden");
+}
+
+function nextQuestion() {
+  State.quizIndex++;
+  if (State.quizIndex >= State.quizQueue.length) {
+    document.getElementById("quiz-card").classList.add("hidden");
+    document.getElementById("quiz-done-screen").classList.remove("hidden");
+    document.getElementById("quiz-done-msg").textContent = `${State.quizQueue.length}문제를 모두 완료했습니다!`;
+    SFX.play("done");
+    return;
+  }
+  showQuestion();
+}
+
+/* ── 전체 목록 ── */
+function renderProblemList() {
+  const list  = document.getElementById("problem-list");
+  const probs = filteredProblems().slice(0, 120);
+  list.innerHTML = "";
+  if (!probs.length) {
+    list.innerHTML = "<p style='color:var(--text3);padding:24px'>문제가 없습니다.</p>";
+    return;
+  }
+  probs.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "problem-card";
+    const nums = ["①","②","③","④"];
+    const optsHtml = (p.options || []).slice(0, 4).map((o, i) =>
+      `<span class="problem-option-tag">${nums[i]} ${escHtml(cleanText(o))}</span>`
+    ).join("");
+    card.innerHTML = `
+      <div class="problem-card-header">
+        <span class="problem-num">문제 ${p.num}</span>
+        <span class="problem-chapter-badge" style="background:${p.partColor||'#888'}">${p.chapterTitle}</span>
+      </div>
+      <div class="problem-question">${escHtml(cleanText(p.question))}</div>
+      ${optsHtml ? `<div class="problem-options">${optsHtml}</div>` : ""}
+      <div class="problem-answer">${escHtml(cleanText(p.answer || "해설이 없습니다."))}</div>
+      <button class="btn-toggle-answer">정답/해설 보기 ▾</button>`;
+
+    const ans = card.querySelector(".problem-answer");
+    const btn = card.querySelector(".btn-toggle-answer");
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      ans.classList.toggle("visible");
+      btn.textContent = ans.classList.contains("visible") ? "접기 ▴" : "정답/해설 보기 ▾";
+      SFX.play(ans.classList.contains("visible") ? "open" : "click");
+    });
+    list.appendChild(card);
+  });
+}
+
+/* ===== AI 채팅 탭 ===== */
+function setupChatTab() {
+  const input = document.getElementById("chat-input");
+  document.getElementById("btn-chat-send").addEventListener("click", sendChat);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+  document.querySelectorAll(".quick-q").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.getElementById("chat-input").value = btn.dataset.q;
+      sendChat();
+    });
+  });
+}
+
+async function sendChat() {
+  const input = document.getElementById("chat-input");
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  SFX.play("nav");
+
+  appendChatMsg("user", text);
+  State.chatHistory.push({ role: "user", content: text });
+
+  const bubble = appendChatMsg("assistant", "");
+  const thinking = document.createElement("div");
+  thinking.className = "msg-thinking";
+  thinking.textContent = "생각 중...";
+  bubble.appendChild(thinking);
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: State.chatHistory }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      bubble.innerHTML = `<span style="color:var(--danger)">${err.error}</span>`;
+      return;
+    }
+    let full = "";
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    thinking.remove();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const line of decoder.decode(value).split("\n")) {
+        if (!line.startsWith("data: ")) continue;
+        const data = line.slice(6);
+        if (data === "[DONE]") break;
+        try {
+          const p = JSON.parse(data);
+          if (p.text) {
+            full += p.text;
+            bubble.innerHTML = renderMarkdown(full);
+            if (window.renderMathInElement) {
+              renderMathInElement(bubble, {
+                delimiters: [{ left:"$$", right:"$$", display:true }, { left:"$", right:"$", display:false }],
+                throwOnError: false,
+              });
+            }
+          }
+        } catch (_) {}
+      }
+    }
+    State.chatHistory.push({ role: "assistant", content: full });
+    scrollChatToBottom();
+    SFX.play("success");
+  } catch (e) {
+    bubble.innerHTML = `<span style="color:var(--danger)">연결 오류: ${e.message}</span>`;
+  }
+}
+
+function appendChatMsg(role, text) {
+  const messages = document.getElementById("chat-messages");
+  const div = document.createElement("div");
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${role === "assistant" ? "AI" : "나"}</div>
+    <div class="msg-bubble">${role === "assistant" ? renderMarkdown(text) : escHtml(text)}</div>`;
+  messages.appendChild(div);
+  scrollChatToBottom();
+  return div.querySelector(".msg-bubble");
+}
+
+function scrollChatToBottom() {
+  const el = document.getElementById("chat-messages");
+  el.scrollTop = el.scrollHeight;
+}
+
+/* ===== 개념 그래프 탭 ===== */
+function setupGraphTab() {
+  document.getElementById("btn-graph-reset").addEventListener("click", renderGraph);
+  document.querySelectorAll(".filter-type, .filter-edge").forEach(cb => cb.addEventListener("change", renderGraph));
+  document.getElementById("btn-graph-goto-chapter").addEventListener("click", () => {
+    const node = State.selectedGraphNode;
+    if (!node || node.type !== "chapter") return;
+    const ch = State.chapters.find(c => c.id === node.id);
+    if (ch) { document.querySelector('[data-tab="study"]').click(); openChapter(ch); }
+  });
+}
+
+function renderGraph() {
+  if (!State.graphData) return;
+  const wrap = document.getElementById("graph-svg-wrap");
+  const svg  = document.getElementById("graph-svg");
+  svg.innerHTML = "";
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  if (!W || !H) return;
+
+  const showTypes = new Set([...document.querySelectorAll(".filter-type:checked")].map(c => c.value));
+  const showEdges = new Set([...document.querySelectorAll(".filter-edge:checked")].map(c => c.value));
+  const nodes = State.graphData.nodes.filter(n => showTypes.has(n.type));
+  const nodeIds = new Set(nodes.map(n => n.id));
+  const links = State.graphData.edges.filter(e => showEdges.has(e.type) && nodeIds.has(e.source) && nodeIds.has(e.target));
+
+  const svgEl = d3.select("#graph-svg").attr("width", W).attr("height", H);
+  const g = svgEl.append("g");
+  svgEl.call(d3.zoom().scaleExtent([0.2, 3]).on("zoom", e => g.attr("transform", e.transform)));
+
+  const defs = svgEl.append("defs");
+  [["prerequisite","#FF6B6B"],["applied_in","#4ECDC4"],["contains","#aab"]].forEach(([type, color]) => {
+    defs.append("marker").attr("id",`arr-${type}`).attr("markerWidth",8).attr("markerHeight",8)
+      .attr("refX",20).attr("refY",3).attr("orient","auto")
+      .append("path").attr("d","M0,0 L0,6 L8,3 z").attr("fill",color);
+  });
+
+  const link = g.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("stroke", d => d.color || "#aab").attr("stroke-width", 1.5).attr("opacity", .5)
+    .attr("stroke-dasharray", d => d.dashed ? "5 3" : null)
+    .attr("marker-end", d => `url(#arr-${d.type})`);
+
+  const node = g.append("g").selectAll("g").data(nodes).enter().append("g").attr("class","graph-node")
+    .call(d3.drag()
+      .on("start", (e,d) => { if (!e.active) sim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on("drag",  (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on("end",   (e,d) => { if (!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  node.append("circle")
+    .attr("r", d => d.size).attr("fill", d => d.color + (d.type==="part"?"dd":"88"))
+    .attr("stroke", d => d.color).attr("stroke-width", 2)
+    .on("click", (e,d) => { SFX.play("nav"); selectGraphNode(d); })
+    .on("mouseover", (e,d) => { const tip=document.getElementById("graph-tooltip"); tip.classList.remove("hidden"); tip.textContent=d.label; moveTooltip(e); })
+    .on("mousemove", e => moveTooltip(e))
+    .on("mouseout", () => document.getElementById("graph-tooltip").classList.add("hidden"));
+
+  node.append("text").attr("dy", d => d.size + 13).text(d => d.label)
+    .style("font-size", d => d.type==="part"?"12px":"10px")
+    .style("font-weight", d => d.type==="part"?"700":"400");
+
+  const sim = d3.forceSimulation(nodes)
+    .force("link",      d3.forceLink(links).id(d=>d.id).distance(d=>d.type==="contains"?85:160).strength(.5))
+    .force("charge",    d3.forceManyBody().strength(-280))
+    .force("center",    d3.forceCenter(W/2, H/2))
+    .force("collision", d3.forceCollide().radius(d=>d.size+10))
+    .on("tick", () => {
+      link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+      node.attr("transform",d=>`translate(${d.x},${d.y})`);
+    });
+}
+
+function moveTooltip(e) {
+  const rect = document.getElementById("graph-svg-wrap").getBoundingClientRect();
+  const tip  = document.getElementById("graph-tooltip");
+  tip.style.left = (e.clientX - rect.left + 12) + "px";
+  tip.style.top  = (e.clientY - rect.top  - 10) + "px";
+}
+
+function selectGraphNode(d) {
+  State.selectedGraphNode = d;
+  const detail = document.getElementById("graph-detail");
+  detail.classList.remove("hidden");
+  document.getElementById("graph-detail-title").textContent    = d.label;
+  document.getElementById("graph-detail-keywords").textContent = d.keywords ? `키워드: ${d.keywords.join(", ")}` : (d.type==="part"?"편(Part)":"");
+  document.getElementById("btn-graph-goto-chapter").style.display = d.type==="chapter" ? "" : "none";
+}
+
+/* ===== 챕터 추가 모달 ===== */
+function setupModal() {
+  const modal = document.getElementById("modal-add-chapter");
+  document.getElementById("btn-add-chapter").addEventListener("click", () => {
+    const sel = document.getElementById("new-ch-part");
+    sel.innerHTML = State.parts.map(p=>`<option value="${p.id}">${p.title}</option>`).join("");
+    modal.classList.remove("hidden");
+  });
+  modal.querySelectorAll(".modal-close").forEach(btn => btn.addEventListener("click", () => modal.classList.add("hidden")));
+  modal.addEventListener("click", e => { if (e.target===modal) modal.classList.add("hidden"); });
+
+  document.getElementById("btn-save-chapter").addEventListener("click", async () => {
+    const newCh = {
+      id:       document.getElementById("new-ch-id").value.trim(),
+      title:    document.getElementById("new-ch-title").value.trim(),
+      partId:   document.getElementById("new-ch-part").value,
+      startPage:   parseInt(document.getElementById("new-ch-start").value) || 1,
+      endPage:     parseInt(document.getElementById("new-ch-end").value)   || 10,
+      pdfStartPage:(parseInt(document.getElementById("new-ch-start").value)||1)-1,
+      keywords: document.getElementById("new-ch-keywords").value.split(",").map(k=>k.trim()).filter(Boolean),
+      check: [],
+    };
+    const part = State.parts.find(p => p.id === newCh.partId);
+    if (part) { newCh.partTitle = part.title; newCh.partColor = part.color; }
+    if (!newCh.id || !newCh.title) { alert("ID와 제목은 필수입니다."); return; }
+    const res = await fetch("/api/chapters", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(newCh)
+    });
+    if (res.ok) {
+      State.chapters.push(newCh);
+      renderSidebar();
+      modal.classList.add("hidden");
+      SFX.play("success");
+    } else {
+      alert((await res.json()).error || "저장 실패");
+    }
+  });
+}
+
+/* ===== 유틸 ===== */
+
+function cleanText(str) {
+  return String(str || "")
+    .replace(/[■□▪▫●○◆◇►◄▶◀]+/g, "")
+    .replace(/\s{2,}/g, " ").trim();
+}
+
+function escHtml(str) {
+  return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function shuffle(arr) {
+  for (let i=arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}

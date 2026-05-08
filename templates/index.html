@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>건축구조 학습</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <!-- 헤더 -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">⬡ 건축구조</div>
+      <span class="logo-sub">건축기사 구조파트 학습</span>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="study">📖 학습</button>
+      <button class="tab-btn" data-tab="quiz">✏️ 문제풀기</button>
+      <button class="tab-btn" data-tab="chat">🤖 AI 질문</button>
+      <button class="tab-btn" data-tab="graph">🕸 개념 그래프</button>
+    </nav>
+    <div class="header-user" id="header-user">
+      <span class="user-name-badge" id="user-name-badge"></span>
+      <button class="btn-sm" id="btn-logout">로그아웃</button>
+    </div>
+  </header>
+
+  <!-- ===== 로그인 화면 ===== -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-box">
+      <div class="auth-logo">⬡ 건축구조 학습</div>
+      <p class="auth-sub">건축기사 구조파트 · 개인 학습 공간</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth="login">로그인</button>
+        <button class="auth-tab" data-auth="register">회원가입</button>
+      </div>
+
+      <div id="auth-form-login" class="auth-form">
+        <input type="text" id="auth-username" class="auth-input" placeholder="사용자명" autocomplete="username">
+        <input type="password" id="auth-password" class="auth-input" placeholder="비밀번호" autocomplete="current-password">
+        <button class="auth-submit" id="btn-do-login">로그인</button>
+      </div>
+
+      <div id="auth-form-register" class="auth-form hidden">
+        <input type="text" id="reg-username" class="auth-input" placeholder="사용자명 (2자 이상)">
+        <input type="password" id="reg-password" class="auth-input" placeholder="비밀번호 (4자 이상)">
+        <input type="password" id="reg-password2" class="auth-input" placeholder="비밀번호 확인">
+        <button class="auth-submit" id="btn-do-register">계정 만들기</button>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+    </div>
+  </div>
+
+  <!-- ===== 탭 1: 학습 ===== -->
+  <div id="tab-study" class="tab-content active">
+    <aside class="sidebar" id="study-sidebar">
+      <div class="sidebar-header">
+        <input type="text" id="chapter-search" placeholder="챕터 검색..." class="search-input">
+      </div>
+      <div id="chapter-list" class="chapter-list"></div>
+    </aside>
+
+    <main class="study-main">
+      <!-- 웰컴 화면 -->
+      <div id="study-welcome" class="welcome-panel">
+        <div style="font-size:48px">📐</div>
+        <h2>건축구조 학습에 오신 것을 환영합니다</h2>
+        <p style="color:var(--text2)">왼쪽 챕터를 선택하면 교재 스캔 페이지를 볼 수 있습니다.</p>
+        <p style="color:var(--text3);font-size:13px">💡 페이지를 드래그하면 해당 부분을 AI에게 바로 질문할 수 있어요</p>
+        <div class="welcome-stats" id="welcome-stats"></div>
+      </div>
+
+      <!-- 챕터 스캔 뷰어 -->
+      <div id="study-content" class="hidden">
+        <!-- 헤더 -->
+        <div class="content-header">
+          <div>
+            <div class="content-part-badge" id="content-part-badge"></div>
+            <h2 id="content-title"></h2>
+          </div>
+          <div class="content-actions">
+            <button class="btn-secondary" id="btn-bookmark">☆ 북마크</button>
+            <button class="btn-secondary" id="btn-mark-done">✓ 학습 완료</button>
+          </div>
+        </div>
+
+        <!-- CHECK 포인트 -->
+        <div class="check-box" id="check-box"></div>
+
+        <!-- 스캔 뷰어 + 주석 패널 -->
+        <div class="scan-layout">
+
+          <!-- 가운데: 책 2페이지 스프레드 뷰어 -->
+          <div class="scan-center">
+            <!-- 페이지 전환 플로팅 버튼 -->
+            <button class="page-turn-btn page-turn-prev btn-icon" id="btn-scan-prev" disabled>◀</button>
+            <button class="page-turn-btn page-turn-next btn-icon" id="btn-scan-next" disabled>▶</button>
+
+            <div class="scan-wrap" id="scan-wrap">
+              <div class="scan-book-wrap" id="scan-book-wrap">
+                <!-- 두 페이지 나란히 (각 페이지에 형광펜 캔버스 포함) -->
+                <div class="scan-spread" id="scan-spread">
+                  <div class="scan-page-wrap" id="scan-page-wrap-left">
+                    <canvas id="scan-page-left"  class="scan-page-canvas"></canvas>
+                    <canvas id="hl-canvas-left"  class="hl-canvas"></canvas>
+                  </div>
+                  <div class="scan-page-divider"></div>
+                  <div class="scan-page-wrap" id="scan-page-wrap-right">
+                    <canvas id="scan-page-right" class="scan-page-canvas"></canvas>
+                    <canvas id="hl-canvas-right" class="hl-canvas"></canvas>
+                  </div>
+                </div>
+                <!-- 드래그 오버레이 (AI질문 / 형광펜 모드 공유) -->
+                <div id="scan-drag-overlay"></div>
+                <!-- 주석 뱃지 오버레이 -->
+                <div id="scan-ann-overlay"></div>
+              </div>
+              <div class="scan-loading hidden" id="scan-loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+
+            <!-- 형광펜 툴바 -->
+            <div class="hl-toolbar" id="hl-toolbar">
+              <div class="hl-tool-group">
+                <button class="hl-tool-btn active" id="btn-tool-select" title="선택/AI질문 모드">🖱 선택</button>
+                <button class="hl-tool-btn" id="btn-tool-hl" title="형광펜 모드">🖊 형광펜</button>
+                <button class="hl-tool-btn" id="btn-tool-pan" title="페이지 이동 모드">✋ 이동</button>
+              </div>
+              <div class="hl-colors hidden" id="hl-colors">
+                <button class="hl-color-btn active" data-color="yellow" style="background:#FFE600" title="중요"></button>
+                <button class="hl-color-btn" data-color="green"  style="background:#00CC44" title="공식"></button>
+                <button class="hl-color-btn" data-color="pink"   style="background:#FF5599" title="암기"></button>
+                <button class="hl-color-btn" data-color="blue"   style="background:#3399FF" title="정의"></button>
+              </div>
+              <div class="hl-legend hidden" id="hl-legend">
+                <span class="hl-leg-item"><span class="hl-leg-dot" style="background:#FFE600"></span>중요</span>
+                <span class="hl-leg-item"><span class="hl-leg-dot" style="background:#00CC44"></span>공식</span>
+                <span class="hl-leg-item"><span class="hl-leg-dot" style="background:#FF5599"></span>암기</span>
+                <span class="hl-leg-item"><span class="hl-leg-dot" style="background:#3399FF"></span>정의</span>
+              </div>
+              <div class="hl-sep hidden" id="hl-filter-wrap">
+                <span class="hl-filter-label">표시:</span>
+                <button class="hl-flt-btn active" data-color="all">전체</button>
+                <button class="hl-flt-btn" data-color="yellow">중요</button>
+                <button class="hl-flt-btn" data-color="green">공식</button>
+                <button class="hl-flt-btn" data-color="pink">암기</button>
+                <button class="hl-flt-btn" data-color="blue">정의</button>
+              </div>
+              <div class="hl-actions hidden" id="hl-actions">
+                <button class="hl-tool-btn" id="btn-hl-eraser" title="지우개: 드래그하면 형광펜 삭제">⌫ 지우개</button>
+                <button class="hl-tool-btn active" id="btn-hl-snap" title="텍스트 스냅: 텍스트 라인에 맞춰 형광펜 적용">문자 스냅 ON</button>
+                <button class="btn-sm" id="btn-hl-undo">↩ 취소</button>
+                <button class="btn-sm" id="btn-hl-clear">🗑 지우기</button>
+              </div>
+            </div>
+
+            <!-- 페이지 네비게이션 -->
+            <div class="scan-nav">
+              <button class="btn-icon sidebar-toggle-btn" id="btn-toggle-sidebar" title="왼쪽 챕터 패널 열기/닫기">◁</button>
+              <span id="scan-page-info" class="scan-page-info">— / —</span>
+              <input type="number" id="scan-page-input" class="page-input" min="1">
+              <button class="btn-sm" id="btn-scan-goto">이동</button>
+              <span class="scan-drag-hint" id="scan-drag-hint">💡 드래그 → AI 질문</span>
+              <button class="btn-icon sidebar-toggle-btn" id="btn-toggle-annpanel" title="오른쪽 기록 패널 열기/닫기">▷</button>
+            </div>
+          </div>
+
+          <!-- 오른쪽: AI 질문 기록 패널 -->
+          <div class="scan-ann-panel" id="scan-ann-panel">
+            <div class="ann-panel-header">
+              <span>📌 AI 질문 기록</span>
+              <button class="btn-sm" id="btn-clear-anns" title="이 챕터 기록 삭제">지우기</button>
+            </div>
+            <!-- 챕터별 탭 -->
+            <div class="ann-chapter-tabs" id="ann-chapter-tabs"></div>
+            <div id="ann-list" class="ann-list">
+              <p class="ann-empty">페이지를 드래그하면<br>AI 답변이 여기에 저장됩니다</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- AI 질문 모달 (드래그 캡처 후 표시) -->
+  <div id="ann-query-modal" class="ann-modal hidden">
+    <div class="ann-modal-box">
+      <div class="ann-modal-header">
+        <span>🔍 AI에게 질문하기</span>
+        <button class="btn-icon" id="btn-ann-cancel">✕</button>
+      </div>
+      <img id="ann-query-preview" class="ann-preview-img" alt="선택 영역">
+      <textarea id="ann-query-input" class="ann-query-input"
+        placeholder="추가 질문을 입력하세요 (비워두면 AI가 자동으로 설명합니다)" rows="3"></textarea>
+      <div class="ann-modal-footer">
+        <button class="btn-secondary" id="btn-ann-cancel2">취소</button>
+        <button class="btn-primary" id="btn-ann-submit">AI에게 질문 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 탭 2: 문제풀기 ===== -->
+  <div id="tab-quiz" class="tab-content hidden">
+    <div class="quiz-container">
+      <!-- 툴바 -->
+      <div class="quiz-toolbar">
+        <h2>✏️ 문제풀기</h2>
+        <select id="quiz-chapter-filter" class="select-input">
+          <option value="">전체 챕터</option>
+        </select>
+        <div class="mode-group">
+          <button class="btn-mode active" data-mode="card">카드 풀기</button>
+          <button class="btn-mode" data-mode="list">전체 목록</button>
+        </div>
+        <button class="btn-primary" id="btn-start-quiz">▶ 시작</button>
+      </div>
+
+      <!-- ── 카드 풀기 모드 ── -->
+      <div id="quiz-card-mode">
+        <!-- 시작 전 안내 -->
+        <div id="quiz-start-screen" style="text-align:center;padding:48px 0">
+          <div style="font-size:48px;margin-bottom:16px">✏️</div>
+          <h3 style="margin-bottom:8px">챕터를 선택하고 시작을 누르세요</h3>
+          <p style="color:var(--text2)">무작위 20문제가 카드 형식으로 출제됩니다</p>
+        </div>
+
+        <!-- 퀴즈 카드 -->
+        <div id="quiz-card" class="quiz-card hidden">
+          <div class="quiz-progress">
+            <span id="quiz-progress-text" style="font-size:12px;color:var(--text3)">0 / 0</span>
+            <div class="progress-bar"><div class="progress-fill" id="quiz-progress-bar" style="width:0%"></div></div>
+          </div>
+          <div class="quiz-meta">
+            <span class="quiz-chapter-tag" id="quiz-chapter-tag"></span>
+            <span class="quiz-num-label" id="quiz-num-label"></span>
+          </div>
+          <div class="quiz-question" id="quiz-question"></div>
+          <div class="quiz-options" id="quiz-options"></div>
+          <div class="quiz-answer-box hidden" id="quiz-answer-box">
+            <div class="ans-label">해설</div>
+            <div id="quiz-answer-text"></div>
+          </div>
+          <div class="quiz-nav">
+            <button class="btn-secondary" id="btn-show-answer">정답 보기</button>
+            <span class="quiz-counter" id="quiz-counter"></span>
+            <button class="btn-primary hidden" id="btn-next-question">다음 문제 →</button>
+          </div>
+        </div>
+
+        <!-- 완료 화면 -->
+        <div id="quiz-done-screen" class="hidden" style="text-align:center;padding:48px">
+          <div style="font-size:56px;margin-bottom:16px">🎉</div>
+          <h3 style="margin-bottom:8px">퀴즈 완료!</h3>
+          <p style="color:var(--text2);margin-bottom:24px" id="quiz-done-msg"></p>
+          <button class="btn-primary" id="btn-quiz-again">다시 풀기</button>
+        </div>
+      </div>
+
+      <!-- ── 전체 목록 모드 ── -->
+      <div id="quiz-list-mode" class="hidden">
+        <div id="problem-list" class="problem-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 탭 3: AI 질문 ===== -->
+  <div id="tab-chat" class="tab-content hidden">
+    <div class="chat-container">
+      <div class="chat-sidebar">
+        <h3>빠른 질문</h3>
+        <div class="quick-questions">
+          <button class="quick-q" data-q="부정정차수 계산 방법을 알기 쉽게 설명해줘">부정정차수 계산 방법</button>
+          <button class="quick-q" data-q="강도감소계수(φ) 값 표를 정리해줘">강도감소계수 φ 표</button>
+          <button class="quick-q" data-q="단순보에서 등분포하중일 때 최대 처짐 공식은?">단순보 최대 처짐</button>
+          <button class="quick-q" data-q="라미의 정리와 sin법칙의 차이점과 사용법을 알려줘">라미의 정리 vs sin법칙</button>
+          <button class="quick-q" data-q="RC 보에서 균형철근비란 무엇이고 왜 중요한가?">균형철근비란?</button>
+          <button class="quick-q" data-q="고장력볼트와 일반볼트의 차이점을 설명해줘">고장력볼트 vs 일반볼트</button>
+          <button class="quick-q" data-q="내진설계에서 반응수정계수 R의 의미와 값은?">반응수정계수 R</button>
+          <button class="quick-q" data-q="모멘트분배법 풀이 순서를 단계별로 알려줘">모멘트분배법 순서</button>
+        </div>
+        <div class="chat-info">
+          <p>📌 교재 내용 기반 답변</p>
+          <p>📌 범위 외 질문도 가능</p>
+        </div>
+      </div>
+      <div class="chat-main">
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg assistant">
+            <div class="msg-avatar">AI</div>
+            <div class="msg-bubble">
+              안녕하세요! 건축구조 학습 AI입니다 😊<br>
+              건축기사 구조 교재를 기반으로 답변드립니다. 궁금한 내용을 자유롭게 질문해 주세요!
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <textarea id="chat-input" placeholder="질문 입력 (Enter: 전송 / Shift+Enter: 줄바꿈)" rows="3"></textarea>
+          <button class="btn-primary" id="btn-chat-send">전송</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 탭 4: 개념 그래프 ===== -->
+  <div id="tab-graph" class="tab-content hidden">
+    <div class="graph-container">
+      <div class="graph-controls">
+        <h3>🕸 개념 관계 그래프</h3>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-line solid" style="background:#FF6B6B"></span>선수과목</span>
+          <span class="legend-item"><span class="legend-line dashed" style="border-color:#4ECDC4"></span>응용</span>
+        </div>
+        <div class="graph-filters">
+          <label><input type="checkbox" class="filter-type" value="part" checked> 편</label>
+          <label><input type="checkbox" class="filter-type" value="chapter" checked> 챕터</label>
+          <label><input type="checkbox" class="filter-edge" value="prerequisite" checked> 선수관계</label>
+          <label><input type="checkbox" class="filter-edge" value="applied_in" checked> 응용</label>
+          <label><input type="checkbox" class="filter-edge" value="contains" checked> 포함</label>
+        </div>
+        <button class="btn-sm" id="btn-graph-reset">초기화</button>
+      </div>
+      <div id="graph-svg-wrap">
+        <svg id="graph-svg"></svg>
+        <div id="graph-tooltip" class="graph-tooltip hidden"></div>
+        <div class="graph-detail hidden" id="graph-detail">
+          <h4 id="graph-detail-title"></h4>
+          <p id="graph-detail-keywords"></p>
+          <button class="btn-sm" id="btn-graph-goto-chapter">챕터로 이동 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 챕터 추가 모달 -->
+  <div id="modal-add-chapter" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>새 챕터 추가</h3>
+        <button class="btn-icon modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>챕터 ID <small>(영문, 예: ch5-1)</small></label>
+        <input type="text" id="new-ch-id" class="text-input" placeholder="ch5-1">
+        <label>챕터 제목</label>
+        <input type="text" id="new-ch-title" class="text-input" placeholder="챕터 제목">
+        <label>편(Part)</label>
+        <select id="new-ch-part" class="select-input" style="width:100%"></select>
+        <label>PDF 시작 페이지</label>
+        <input type="number" id="new-ch-start" class="text-input" placeholder="1">
+        <label>PDF 끝 페이지</label>
+        <input type="number" id="new-ch-end" class="text-input" placeholder="10">
+        <label>핵심 키워드 (쉼표 구분)</label>
+        <input type="text" id="new-ch-keywords" class="text-input" placeholder="키워드1, 키워드2">
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary modal-close">취소</button>
+        <button class="btn-primary" id="btn-save-chapter">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주석 확대 보기 모달 -->
+  <div id="ann-detail-modal" class="ann-detail-modal hidden">
+    <div class="ann-detail-box">
+      <div class="ann-detail-header">
+        <span id="ann-detail-title" class="ann-detail-q"></span>
+        <button class="btn-icon" id="btn-ann-detail-close">✕</button>
+      </div>
+      <img id="ann-detail-crop" class="ann-detail-crop" alt="">
+      <div id="ann-detail-answer" class="ann-detail-answer"></div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
