@@ -230,6 +230,32 @@ def get_page_image(page_num):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/crop-image/<int:page_num>")
+def get_crop_image(page_num):
+    """PDF 페이지 특정 영역을 크롭한 PNG 반환
+    Query: x0, y0, x1, y1 (PDF 좌표계 포인트)"""
+    if not PDF_PATH.exists():
+        return jsonify({"error": "PDF not found"}), 404
+    try:
+        x0 = float(request.args.get("x0", 0))
+        y0 = float(request.args.get("y0", 0))
+        x1 = float(request.args.get("x1", 0))
+        y1 = float(request.args.get("y1", 0))
+
+        SCALE = 2.0
+        doc  = pymupdf.open(str(PDF_PATH))
+        page = doc[page_num - 1]
+        clip = pymupdf.Rect(x0, y0, x1, y1)
+        pix  = page.get_pixmap(matrix=pymupdf.Matrix(SCALE, SCALE), clip=clip)
+        img_bytes = pix.tobytes("png")
+        doc.close()
+        resp = send_file(io.BytesIO(img_bytes), mimetype="image/png")
+        resp.headers["Cache-Control"] = "public, max-age=86400"
+        return resp
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/chapters", methods=["POST"])
 def add_chapter():
     new_ch = request.get_json()

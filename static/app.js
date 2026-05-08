@@ -1377,79 +1377,68 @@ function renderWelcomeStats() {
 
 /* ===== 문제풀기 탭 ===== */
 const QuizViewer = {
-  pages: [],      // 현재 필터에 해당하는 페이지 번호 배열
-  idx: 0,         // 현재 페이지 인덱스
-  allPages: {},   // { chapterId: [pageNums...] }
+  crops: [],      // 현재 필터에 해당하는 크롭 배열
+  idx:   0,
+  allCrops: [],   // 전체 크롭 목록
 };
 
 async function setupQuizTab() {
-  // problem_pages.json 로드
   try {
-    const res = await fetch("/api/problem-pages");
-    QuizViewer.allPages = await res.json();
+    const res = await fetch("/static/data/problem_crops.json");
+    QuizViewer.allCrops = await res.json();
   } catch (_) {
-    QuizViewer.allPages = {};
+    QuizViewer.allCrops = [];
   }
 
   // 챕터 필터 옵션
   const sel = document.getElementById("quiz-chapter-filter");
+  const chapterIds = [...new Set(QuizViewer.allCrops.map(c => c.chapterId))];
   State.chapters.forEach(ch => {
-    const pages = QuizViewer.allPages[ch.id] || [];
-    if (!pages.length) return;
+    if (!chapterIds.includes(ch.id)) return;
+    const cnt = QuizViewer.allCrops.filter(c => c.chapterId === ch.id).length;
     const opt = document.createElement("option");
     opt.value = ch.id;
-    opt.textContent = `${ch.partTitle} › ${ch.title} (${pages.length}p)`;
+    opt.textContent = `${ch.partTitle} › ${ch.title} (${cnt}문제)`;
     sel.appendChild(opt);
   });
 
-  sel.addEventListener("change", () => quizLoadPages());
-  document.getElementById("btn-prob-prev").addEventListener("click", () => quizGoTo(QuizViewer.idx - 1));
-  document.getElementById("btn-prob-next").addEventListener("click", () => quizGoTo(QuizViewer.idx + 1));
+  sel.addEventListener("change", () => { QuizViewer.idx = 0; quizRender(); });
 
-  // 키보드 좌/우 화살표
-  document.addEventListener("keydown", e => {
-    if (document.getElementById("tab-quiz").classList.contains("hidden")) return;
-    if (e.key === "ArrowLeft")  quizGoTo(QuizViewer.idx - 1);
-    if (e.key === "ArrowRight") quizGoTo(QuizViewer.idx + 1);
+  document.getElementById("btn-prob-prev").addEventListener("click", () => {
+    QuizViewer.idx = Math.max(0, QuizViewer.idx - 1);
+    quizRender();
+  });
+  document.getElementById("btn-prob-next").addEventListener("click", () => {
+    QuizViewer.idx = Math.min(quizCurrentCrops().length - 1, QuizViewer.idx + 1);
+    quizRender();
   });
 
-  quizLoadPages();
+  document.addEventListener("keydown", e => {
+    if (document.getElementById("tab-quiz").classList.contains("hidden")) return;
+    if (e.key === "ArrowLeft")  { QuizViewer.idx = Math.max(0, QuizViewer.idx - 1); quizRender(); }
+    if (e.key === "ArrowRight") { QuizViewer.idx = Math.min(quizCurrentCrops().length - 1, QuizViewer.idx + 1); quizRender(); }
+  });
+
+  quizRender();
 }
 
-function quizLoadPages() {
+function quizCurrentCrops() {
   const chId = document.getElementById("quiz-chapter-filter").value;
-  if (chId) {
-    QuizViewer.pages = QuizViewer.allPages[chId] || [];
-  } else {
-    // 전체: 모든 챕터 페이지 합치되 순서 유지 & 중복 제거
-    const seen = new Set();
-    QuizViewer.pages = [];
-    State.chapters.forEach(ch => {
-      (QuizViewer.allPages[ch.id] || []).forEach(p => {
-        if (!seen.has(p)) { seen.add(p); QuizViewer.pages.push(p); }
-      });
-    });
-  }
-  QuizViewer.idx = 0;
-  quizRender();
-}
-
-function quizGoTo(idx) {
-  if (!QuizViewer.pages.length) return;
-  QuizViewer.idx = Math.max(0, Math.min(QuizViewer.pages.length - 1, idx));
-  quizRender();
+  return chId
+    ? QuizViewer.allCrops.filter(c => c.chapterId === chId)
+    : QuizViewer.allCrops;
 }
 
 function quizRender() {
-  const pages  = QuizViewer.pages;
-  const empty  = document.getElementById("quiz-empty");
-  const wrap   = document.getElementById("prob-card-wrap");
-  const img    = document.getElementById("prob-page-img");
+  const crops   = quizCurrentCrops();
+  const empty   = document.getElementById("quiz-empty");
+  const wrap    = document.getElementById("prob-card-wrap");
+  const img     = document.getElementById("prob-page-img");
   const counter = document.getElementById("prob-page-counter");
   const btnPrev = document.getElementById("btn-prob-prev");
   const btnNext = document.getElementById("btn-prob-next");
 
-  if (!pages.length) {
+  if (!crops.length) {
     empty.classList.remove("hidden");
     wrap.classList.add("hidden");
     counter.textContent = "";
@@ -1457,16 +1446,22 @@ function quizRender() {
     return;
   }
 
+  // idx 경계 보정
+  QuizViewer.idx = Math.max(0, Math.min(crops.length - 1, QuizViewer.idx));
+  const crop = crops[QuizViewer.idx];
+
   empty.classList.add("hidden");
   wrap.classList.remove("hidden");
 
-  const pageNum = pages[QuizViewer.idx];
-  img.alt = "로딩 중...";
-  img.onerror = () => { img.alt = `페이지 ${pageNum} 로드 실패 (서버 로그 확인)`; };
-  img.src = `/api/page-image/${pageNum}`;
-  counter.textContent = `${QuizViewer.idx + 1} / ${pages.length} 페이지`;
+  const [x0, y0, x1, y1] = crop.bbox;
+  const url = `/api/crop-image/${crop.page}?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}`;
+  img.alt = `문제 ${crop.num}`;
+  img.onerror = () => { img.alt = `문제 ${crop.num} 로드 실패`; };
+  img.src = url;
+
+  counter.textContent = `문제 ${crop.num}  ·  ${QuizViewer.idx + 1} / ${crops.length}`;
   btnPrev.disabled = QuizViewer.idx === 0;
-  btnNext.disabled = QuizViewer.idx === pages.length - 1;
+  btnNext.disabled = QuizViewer.idx === crops.length - 1;
 }
 
 /* ===== AI 채팅 탭 ===== */

@@ -1,0 +1,5507 @@
+[
+  {
+    "id": "ch1-1_1",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 20,
+    "bbox": [
+      0,
+      119,
+      270,
+      473
+    ]
+  },
+  {
+    "id": "ch1-1_3",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 20,
+    "bbox": [
+      0,
+      457,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch1-1_4",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 20,
+    "bbox": [
+      254,
+      117,
+      525,
+      274
+    ]
+  },
+  {
+    "id": "ch1-1_5",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 20,
+    "bbox": [
+      254,
+      258,
+      525,
+      472
+    ]
+  },
+  {
+    "id": "ch1-1_6",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 20,
+    "bbox": [
+      254,
+      456,
+      525,
+      666
+    ]
+  },
+  {
+    "id": "ch1-1_8",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 21,
+    "bbox": [
+      0,
+      257,
+      269,
+      670
+    ]
+  },
+  {
+    "id": "ch1-1_9",
+    "chapterId": "ch1-1",
+    "chapterTitle": "힘의 합성과 회전",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 21,
+    "bbox": [
+      253,
+      452,
+      522,
+      670
+    ]
+  },
+  {
+    "id": "ch1-10_2",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 2,
+    "page": 180,
+    "bbox": [
+      0,
+      263,
+      271,
+      471
+    ]
+  },
+  {
+    "id": "ch1-10_3",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 180,
+    "bbox": [
+      0,
+      455,
+      271,
+      665
+    ]
+  },
+  {
+    "id": "ch1-10_4",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 180,
+    "bbox": [
+      255,
+      120,
+      526,
+      429
+    ]
+  },
+  {
+    "id": "ch1-10_5",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 180,
+    "bbox": [
+      255,
+      413,
+      526,
+      665
+    ]
+  },
+  {
+    "id": "ch1-10_9",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 181,
+    "bbox": [
+      254,
+      73,
+      524,
+      449
+    ]
+  },
+  {
+    "id": "ch1-10_12",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 12,
+    "page": 182,
+    "bbox": [
+      0,
+      70,
+      270,
+      715
+    ]
+  },
+  {
+    "id": "ch1-10_13",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 182,
+    "bbox": [
+      254,
+      339,
+      524,
+      715
+    ]
+  },
+  {
+    "id": "ch1-10_15",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 183,
+    "bbox": [
+      0,
+      74,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-10_16",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 16,
+    "page": 183,
+    "bbox": [
+      254,
+      71,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch1-10_17",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 17,
+    "page": 184,
+    "bbox": [
+      0,
+      72,
+      270,
+      358
+    ]
+  },
+  {
+    "id": "ch1-10_18",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 184,
+    "bbox": [
+      0,
+      342,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-10_20",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 20,
+    "page": 184,
+    "bbox": [
+      254,
+      337,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch1-10_21",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 21,
+    "page": 185,
+    "bbox": [
+      0,
+      74,
+      270,
+      360
+    ]
+  },
+  {
+    "id": "ch1-10_22",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 22,
+    "page": 185,
+    "bbox": [
+      0,
+      344,
+      270,
+      670
+    ]
+  },
+  {
+    "id": "ch1-10_23",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 23,
+    "page": 185,
+    "bbox": [
+      254,
+      76,
+      523,
+      361
+    ]
+  },
+  {
+    "id": "ch1-10_24",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 24,
+    "page": 185,
+    "bbox": [
+      254,
+      345,
+      523,
+      670
+    ]
+  },
+  {
+    "id": "ch1-10_77",
+    "chapterId": "ch1-10",
+    "chapterTitle": "부정정구조",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 77,
+    "page": 181,
+    "bbox": [
+      254,
+      433,
+      524,
+      670
+    ]
+  },
+  {
+    "id": "ch1-2_3",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 30,
+    "bbox": [
+      0,
+      505,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch1-2_4",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 30,
+    "bbox": [
+      255,
+      119,
+      525,
+      355
+    ]
+  },
+  {
+    "id": "ch1-2_5",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 30,
+    "bbox": [
+      255,
+      339,
+      525,
+      521
+    ]
+  },
+  {
+    "id": "ch1-2_6",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 30,
+    "bbox": [
+      255,
+      505,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch1-2_7",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 7,
+    "page": 30,
+    "bbox": [
+      0,
+      121,
+      271,
+      521
+    ]
+  },
+  {
+    "id": "ch1-2_8",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 31,
+    "bbox": [
+      0,
+      244,
+      271,
+      676
+    ]
+  },
+  {
+    "id": "ch1-2_9",
+    "chapterId": "ch1-2",
+    "chapterTitle": "힘의 평형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 31,
+    "bbox": [
+      255,
+      431,
+      526,
+      676
+    ]
+  },
+  {
+    "id": "ch1-4_1",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 44,
+    "bbox": [
+      0,
+      120,
+      269,
+      450
+    ]
+  },
+  {
+    "id": "ch1-4_2",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 2,
+    "page": 62,
+    "bbox": [
+      0,
+      427,
+      272,
+      670
+    ]
+  },
+  {
+    "id": "ch1-4_3",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 44,
+    "bbox": [
+      0,
+      434,
+      269,
+      667
+    ]
+  },
+  {
+    "id": "ch1-4_4",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 44,
+    "bbox": [
+      253,
+      120,
+      522,
+      446
+    ]
+  },
+  {
+    "id": "ch1-4_5",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 63,
+    "bbox": [
+      0,
+      75,
+      272,
+      718
+    ]
+  },
+  {
+    "id": "ch1-4_6",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 44,
+    "bbox": [
+      253,
+      430,
+      522,
+      667
+    ]
+  },
+  {
+    "id": "ch1-4_7",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 7,
+    "page": 62,
+    "bbox": [
+      0,
+      119,
+      272,
+      443
+    ]
+  },
+  {
+    "id": "ch1-4_8",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 63,
+    "bbox": [
+      256,
+      337,
+      527,
+      718
+    ]
+  },
+  {
+    "id": "ch1-4_9",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 45,
+    "bbox": [
+      253,
+      73,
+      523,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_11",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 11,
+    "page": 46,
+    "bbox": [
+      0,
+      72,
+      270,
+      397
+    ]
+  },
+  {
+    "id": "ch1-4_12",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 12,
+    "page": 46,
+    "bbox": [
+      0,
+      381,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_13",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 65,
+    "bbox": [
+      0,
+      71,
+      271,
+      374
+    ]
+  },
+  {
+    "id": "ch1-4_14",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 14,
+    "page": 46,
+    "bbox": [
+      254,
+      262,
+      525,
+      531
+    ]
+  },
+  {
+    "id": "ch1-4_15",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 46,
+    "bbox": [
+      254,
+      515,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_17",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 17,
+    "page": 47,
+    "bbox": [
+      0,
+      350,
+      271,
+      670
+    ]
+  },
+  {
+    "id": "ch1-4_18",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 66,
+    "bbox": [
+      0,
+      332,
+      270,
+      665
+    ]
+  },
+  {
+    "id": "ch1-4_19",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 19,
+    "page": 66,
+    "bbox": [
+      254,
+      68,
+      524,
+      433
+    ]
+  },
+  {
+    "id": "ch1-4_20",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 20,
+    "page": 66,
+    "bbox": [
+      254,
+      417,
+      524,
+      665
+    ]
+  },
+  {
+    "id": "ch1-4_21",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 21,
+    "page": 67,
+    "bbox": [
+      0,
+      72,
+      271,
+      370
+    ]
+  },
+  {
+    "id": "ch1-4_22",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 22,
+    "page": 67,
+    "bbox": [
+      0,
+      354,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch1-4_23",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 23,
+    "page": 67,
+    "bbox": [
+      255,
+      73,
+      526,
+      491
+    ]
+  },
+  {
+    "id": "ch1-4_24",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 24,
+    "page": 67,
+    "bbox": [
+      255,
+      475,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch1-4_25",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 25,
+    "page": 68,
+    "bbox": [
+      0,
+      73,
+      272,
+      312
+    ]
+  },
+  {
+    "id": "ch1-4_26",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 26,
+    "page": 68,
+    "bbox": [
+      0,
+      296,
+      272,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_27",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 27,
+    "page": 68,
+    "bbox": [
+      256,
+      72,
+      527,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_28",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 28,
+    "page": 69,
+    "bbox": [
+      0,
+      72,
+      272,
+      670
+    ]
+  },
+  {
+    "id": "ch1-4_29",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 29,
+    "page": 69,
+    "bbox": [
+      256,
+      71,
+      527,
+      434
+    ]
+  },
+  {
+    "id": "ch1-4_30",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 30,
+    "page": 69,
+    "bbox": [
+      256,
+      418,
+      527,
+      670
+    ]
+  },
+  {
+    "id": "ch1-4_31",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 31,
+    "page": 70,
+    "bbox": [
+      0,
+      71,
+      271,
+      409
+    ]
+  },
+  {
+    "id": "ch1-4_32",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 32,
+    "page": 70,
+    "bbox": [
+      0,
+      393,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_33",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 33,
+    "page": 70,
+    "bbox": [
+      255,
+      71,
+      526,
+      246
+    ]
+  },
+  {
+    "id": "ch1-4_34",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 34,
+    "page": 70,
+    "bbox": [
+      255,
+      230,
+      526,
+      408
+    ]
+  },
+  {
+    "id": "ch1-4_35",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 35,
+    "page": 70,
+    "bbox": [
+      255,
+      392,
+      526,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_36",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 36,
+    "page": 71,
+    "bbox": [
+      0,
+      73,
+      270,
+      335
+    ]
+  },
+  {
+    "id": "ch1-4_37",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 37,
+    "page": 71,
+    "bbox": [
+      0,
+      319,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch1-4_38",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 38,
+    "page": 71,
+    "bbox": [
+      254,
+      71,
+      524,
+      669
+    ]
+  },
+  {
+    "id": "ch1-4_39",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 39,
+    "page": 72,
+    "bbox": [
+      0,
+      70,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_41",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 41,
+    "page": 72,
+    "bbox": [
+      254,
+      478,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch1-4_42",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 42,
+    "page": 73,
+    "bbox": [
+      0,
+      72,
+      271,
+      670
+    ]
+  },
+  {
+    "id": "ch1-4_43",
+    "chapterId": "ch1-4",
+    "chapterTitle": "전단력·휨모멘트",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 43,
+    "page": 73,
+    "bbox": [
+      255,
+      73,
+      525,
+      670
+    ]
+  },
+  {
+    "id": "ch1-5_1",
+    "chapterId": "ch1-5",
+    "chapterTitle": "트러스 구조해석",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 86,
+    "bbox": [
+      0,
+      120,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch1-5_4",
+    "chapterId": "ch1-5",
+    "chapterTitle": "트러스 구조해석",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 86,
+    "bbox": [
+      254,
+      389,
+      524,
+      666
+    ]
+  },
+  {
+    "id": "ch1-5_5",
+    "chapterId": "ch1-5",
+    "chapterTitle": "트러스 구조해석",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 87,
+    "bbox": [
+      0,
+      70,
+      271,
+      667
+    ]
+  },
+  {
+    "id": "ch1-5_6",
+    "chapterId": "ch1-5",
+    "chapterTitle": "트러스 구조해석",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 87,
+    "bbox": [
+      255,
+      350,
+      525,
+      667
+    ]
+  },
+  {
+    "id": "ch1-6_1",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 102,
+    "bbox": [
+      0,
+      120,
+      271,
+      667
+    ]
+  },
+  {
+    "id": "ch1-6_3",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 102,
+    "bbox": [
+      255,
+      121,
+      525,
+      359
+    ]
+  },
+  {
+    "id": "ch1-6_4",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 102,
+    "bbox": [
+      255,
+      343,
+      525,
+      667
+    ]
+  },
+  {
+    "id": "ch1-6_5",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 103,
+    "bbox": [
+      0,
+      71,
+      271,
+      371
+    ]
+  },
+  {
+    "id": "ch1-6_6",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 103,
+    "bbox": [
+      0,
+      355,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch1-6_8",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 103,
+    "bbox": [
+      255,
+      414,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch1-6_9",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 104,
+    "bbox": [
+      0,
+      72,
+      271,
+      278
+    ]
+  },
+  {
+    "id": "ch1-6_10",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 10,
+    "page": 104,
+    "bbox": [
+      0,
+      262,
+      271,
+      452
+    ]
+  },
+  {
+    "id": "ch1-6_11",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 11,
+    "page": 104,
+    "bbox": [
+      0,
+      436,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch1-6_12",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 12,
+    "page": 104,
+    "bbox": [
+      255,
+      73,
+      526,
+      279
+    ]
+  },
+  {
+    "id": "ch1-6_13",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 104,
+    "bbox": [
+      255,
+      263,
+      526,
+      451
+    ]
+  },
+  {
+    "id": "ch1-6_14",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 14,
+    "page": 104,
+    "bbox": [
+      255,
+      435,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch1-6_15",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 105,
+    "bbox": [
+      0,
+      72,
+      270,
+      492
+    ]
+  },
+  {
+    "id": "ch1-6_16",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 16,
+    "page": 105,
+    "bbox": [
+      0,
+      476,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-6_18",
+    "chapterId": "ch1-6",
+    "chapterTitle": "단면의 성질",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 105,
+    "bbox": [
+      254,
+      342,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch1-7_1",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 122,
+    "bbox": [
+      0,
+      123,
+      271,
+      477
+    ]
+  },
+  {
+    "id": "ch1-7_3",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 122,
+    "bbox": [
+      0,
+      461,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch1-7_4",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 122,
+    "bbox": [
+      255,
+      123,
+      526,
+      325
+    ]
+  },
+  {
+    "id": "ch1-7_5",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 122,
+    "bbox": [
+      255,
+      309,
+      526,
+      479
+    ]
+  },
+  {
+    "id": "ch1-7_6",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 122,
+    "bbox": [
+      255,
+      463,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch1-7_9",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 123,
+    "bbox": [
+      0,
+      484,
+      270,
+      670
+    ]
+  },
+  {
+    "id": "ch1-7_13",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 124,
+    "bbox": [
+      0,
+      390,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch1-7_14",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 14,
+    "page": 124,
+    "bbox": [
+      254,
+      72,
+      524,
+      406
+    ]
+  },
+  {
+    "id": "ch1-7_15",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 124,
+    "bbox": [
+      254,
+      390,
+      524,
+      669
+    ]
+  },
+  {
+    "id": "ch1-7_16",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 16,
+    "page": 125,
+    "bbox": [
+      0,
+      67,
+      270,
+      372
+    ]
+  },
+  {
+    "id": "ch1-7_17",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 17,
+    "page": 125,
+    "bbox": [
+      0,
+      356,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch1-7_18",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 125,
+    "bbox": [
+      254,
+      71,
+      524,
+      373
+    ]
+  },
+  {
+    "id": "ch1-7_19",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 19,
+    "page": 125,
+    "bbox": [
+      254,
+      357,
+      524,
+      667
+    ]
+  },
+  {
+    "id": "ch1-7_20",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 20,
+    "page": 126,
+    "bbox": [
+      0,
+      72,
+      272,
+      404
+    ]
+  },
+  {
+    "id": "ch1-7_21",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 21,
+    "page": 126,
+    "bbox": [
+      0,
+      388,
+      272,
+      667
+    ]
+  },
+  {
+    "id": "ch1-7_22",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 22,
+    "page": 126,
+    "bbox": [
+      256,
+      71,
+      527,
+      334
+    ]
+  },
+  {
+    "id": "ch1-7_23",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 23,
+    "page": 126,
+    "bbox": [
+      256,
+      318,
+      527,
+      667
+    ]
+  },
+  {
+    "id": "ch1-7_24",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 24,
+    "page": 127,
+    "bbox": [
+      0,
+      71,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch1-7_25",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 25,
+    "page": 127,
+    "bbox": [
+      255,
+      71,
+      526,
+      668
+    ]
+  },
+  {
+    "id": "ch1-7_26",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 26,
+    "page": 128,
+    "bbox": [
+      0,
+      71,
+      271,
+      281
+    ]
+  },
+  {
+    "id": "ch1-7_27",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 27,
+    "page": 128,
+    "bbox": [
+      0,
+      265,
+      271,
+      479
+    ]
+  },
+  {
+    "id": "ch1-7_28",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 28,
+    "page": 128,
+    "bbox": [
+      0,
+      463,
+      271,
+      672
+    ]
+  },
+  {
+    "id": "ch1-7_29",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 29,
+    "page": 128,
+    "bbox": [
+      255,
+      71,
+      526,
+      279
+    ]
+  },
+  {
+    "id": "ch1-7_30",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 30,
+    "page": 128,
+    "bbox": [
+      255,
+      263,
+      526,
+      481
+    ]
+  },
+  {
+    "id": "ch1-7_31",
+    "chapterId": "ch1-7",
+    "chapterTitle": "응력과 변형률",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 31,
+    "page": 128,
+    "bbox": [
+      255,
+      465,
+      526,
+      672
+    ]
+  },
+  {
+    "id": "ch1-8_1",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 1,
+    "page": 142,
+    "bbox": [
+      0,
+      121,
+      270,
+      717
+    ]
+  },
+  {
+    "id": "ch1-8_3",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 142,
+    "bbox": [
+      254,
+      118,
+      524,
+      367
+    ]
+  },
+  {
+    "id": "ch1-8_4",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 142,
+    "bbox": [
+      254,
+      351,
+      524,
+      717
+    ]
+  },
+  {
+    "id": "ch1-8_6",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 143,
+    "bbox": [
+      0,
+      366,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch1-8_8",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 143,
+    "bbox": [
+      254,
+      366,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch1-8_9",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 144,
+    "bbox": [
+      0,
+      72,
+      271,
+      405
+    ]
+  },
+  {
+    "id": "ch1-8_10",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 10,
+    "page": 144,
+    "bbox": [
+      0,
+      389,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch1-8_11",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 11,
+    "page": 144,
+    "bbox": [
+      255,
+      72,
+      526,
+      405
+    ]
+  },
+  {
+    "id": "ch1-8_12",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 12,
+    "page": 144,
+    "bbox": [
+      255,
+      389,
+      526,
+      668
+    ]
+  },
+  {
+    "id": "ch1-8_13",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 145,
+    "bbox": [
+      0,
+      69,
+      270,
+      374
+    ]
+  },
+  {
+    "id": "ch1-8_14",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 14,
+    "page": 145,
+    "bbox": [
+      0,
+      358,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch1-8_15",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 145,
+    "bbox": [
+      254,
+      71,
+      523,
+      374
+    ]
+  },
+  {
+    "id": "ch1-8_16",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 16,
+    "page": 145,
+    "bbox": [
+      254,
+      358,
+      523,
+      666
+    ]
+  },
+  {
+    "id": "ch1-8_17",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 17,
+    "page": 146,
+    "bbox": [
+      0,
+      70,
+      270,
+      308
+    ]
+  },
+  {
+    "id": "ch1-8_18",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 146,
+    "bbox": [
+      0,
+      292,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch1-8_19",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 19,
+    "page": 146,
+    "bbox": [
+      254,
+      70,
+      523,
+      666
+    ]
+  },
+  {
+    "id": "ch1-8_21",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 21,
+    "page": 147,
+    "bbox": [
+      0,
+      70,
+      270,
+      354
+    ]
+  },
+  {
+    "id": "ch1-8_22",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 22,
+    "page": 147,
+    "bbox": [
+      0,
+      338,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch1-8_23",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 23,
+    "page": 147,
+    "bbox": [
+      254,
+      69,
+      524,
+      354
+    ]
+  },
+  {
+    "id": "ch1-8_24",
+    "chapterId": "ch1-8",
+    "chapterTitle": "보의 휨변형",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 24,
+    "page": 147,
+    "bbox": [
+      254,
+      338,
+      524,
+      666
+    ]
+  },
+  {
+    "id": "ch1-9_3",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 3,
+    "page": 160,
+    "bbox": [
+      255,
+      121,
+      525,
+      351
+    ]
+  },
+  {
+    "id": "ch1-9_4",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 4,
+    "page": 160,
+    "bbox": [
+      255,
+      335,
+      525,
+      667
+    ]
+  },
+  {
+    "id": "ch1-9_5",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 5,
+    "page": 161,
+    "bbox": [
+      0,
+      69,
+      270,
+      342
+    ]
+  },
+  {
+    "id": "ch1-9_6",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 6,
+    "page": 161,
+    "bbox": [
+      0,
+      326,
+      270,
+      665
+    ]
+  },
+  {
+    "id": "ch1-9_7",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 7,
+    "page": 160,
+    "bbox": [
+      0,
+      118,
+      271,
+      667
+    ]
+  },
+  {
+    "id": "ch1-9_8",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 8,
+    "page": 161,
+    "bbox": [
+      254,
+      327,
+      523,
+      665
+    ]
+  },
+  {
+    "id": "ch1-9_9",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 9,
+    "page": 162,
+    "bbox": [
+      0,
+      69,
+      270,
+      332
+    ]
+  },
+  {
+    "id": "ch1-9_10",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 10,
+    "page": 162,
+    "bbox": [
+      0,
+      316,
+      270,
+      665
+    ]
+  },
+  {
+    "id": "ch1-9_11",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 11,
+    "page": 162,
+    "bbox": [
+      254,
+      70,
+      525,
+      665
+    ]
+  },
+  {
+    "id": "ch1-9_12",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 12,
+    "page": 163,
+    "bbox": [
+      0,
+      73,
+      270,
+      353
+    ]
+  },
+  {
+    "id": "ch1-9_13",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 13,
+    "page": 163,
+    "bbox": [
+      0,
+      337,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch1-9_14",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 14,
+    "page": 163,
+    "bbox": [
+      254,
+      73,
+      525,
+      219
+    ]
+  },
+  {
+    "id": "ch1-9_15",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 15,
+    "page": 163,
+    "bbox": [
+      254,
+      203,
+      525,
+      355
+    ]
+  },
+  {
+    "id": "ch1-9_16",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 16,
+    "page": 163,
+    "bbox": [
+      254,
+      339,
+      525,
+      514
+    ]
+  },
+  {
+    "id": "ch1-9_17",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 17,
+    "page": 163,
+    "bbox": [
+      254,
+      498,
+      525,
+      669
+    ]
+  },
+  {
+    "id": "ch1-9_18",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 18,
+    "page": 164,
+    "bbox": [
+      0,
+      71,
+      269,
+      401
+    ]
+  },
+  {
+    "id": "ch1-9_19",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 19,
+    "page": 164,
+    "bbox": [
+      0,
+      385,
+      269,
+      668
+    ]
+  },
+  {
+    "id": "ch1-9_21",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 21,
+    "page": 164,
+    "bbox": [
+      253,
+      385,
+      523,
+      668
+    ]
+  },
+  {
+    "id": "ch1-9_22",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 22,
+    "page": 165,
+    "bbox": [
+      0,
+      72,
+      270,
+      335
+    ]
+  },
+  {
+    "id": "ch1-9_23",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 23,
+    "page": 165,
+    "bbox": [
+      0,
+      319,
+      270,
+      493
+    ]
+  },
+  {
+    "id": "ch1-9_24",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 24,
+    "page": 165,
+    "bbox": [
+      0,
+      477,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch1-9_25",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 25,
+    "page": 165,
+    "bbox": [
+      254,
+      71,
+      524,
+      335
+    ]
+  },
+  {
+    "id": "ch1-9_26",
+    "chapterId": "ch1-9",
+    "chapterTitle": "기둥",
+    "partTitle": "구조역학",
+    "partColor": "#4A90D9",
+    "num": 26,
+    "page": 165,
+    "bbox": [
+      254,
+      319,
+      524,
+      669
+    ]
+  },
+  {
+    "id": "ch2-1_3",
+    "chapterId": "ch2-1",
+    "chapterTitle": "RC 해석과 설계의 원칙",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 3,
+    "page": 201,
+    "bbox": [
+      0,
+      120,
+      269,
+      672
+    ]
+  },
+  {
+    "id": "ch2-1_5",
+    "chapterId": "ch2-1",
+    "chapterTitle": "RC 해석과 설계의 원칙",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 5,
+    "page": 201,
+    "bbox": [
+      253,
+      516,
+      523,
+      672
+    ]
+  },
+  {
+    "id": "ch2-2_2",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 2,
+    "page": 211,
+    "bbox": [
+      0,
+      288,
+      270,
+      482
+    ]
+  },
+  {
+    "id": "ch2-2_3",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 3,
+    "page": 211,
+    "bbox": [
+      0,
+      466,
+      270,
+      674
+    ]
+  },
+  {
+    "id": "ch2-2_4",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 4,
+    "page": 211,
+    "bbox": [
+      254,
+      121,
+      524,
+      356
+    ]
+  },
+  {
+    "id": "ch2-2_5",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 5,
+    "page": 211,
+    "bbox": [
+      254,
+      340,
+      524,
+      549
+    ]
+  },
+  {
+    "id": "ch2-2_6",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 6,
+    "page": 211,
+    "bbox": [
+      254,
+      533,
+      524,
+      674
+    ]
+  },
+  {
+    "id": "ch2-2_7",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 7,
+    "page": 211,
+    "bbox": [
+      0,
+      122,
+      270,
+      304
+    ]
+  },
+  {
+    "id": "ch2-2_8",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 8,
+    "page": 212,
+    "bbox": [
+      0,
+      217,
+      270,
+      427
+    ]
+  },
+  {
+    "id": "ch2-2_9",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 9,
+    "page": 212,
+    "bbox": [
+      0,
+      411,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch2-2_10",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 10,
+    "page": 212,
+    "bbox": [
+      254,
+      70,
+      523,
+      426
+    ]
+  },
+  {
+    "id": "ch2-2_11",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 11,
+    "page": 212,
+    "bbox": [
+      254,
+      410,
+      523,
+      667
+    ]
+  },
+  {
+    "id": "ch2-2_12",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 12,
+    "page": 213,
+    "bbox": [
+      0,
+      70,
+      270,
+      377
+    ]
+  },
+  {
+    "id": "ch2-2_13",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 13,
+    "page": 213,
+    "bbox": [
+      0,
+      361,
+      270,
+      665
+    ]
+  },
+  {
+    "id": "ch2-2_14",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 14,
+    "page": 213,
+    "bbox": [
+      254,
+      69,
+      523,
+      377
+    ]
+  },
+  {
+    "id": "ch2-2_15",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 15,
+    "page": 213,
+    "bbox": [
+      254,
+      361,
+      523,
+      665
+    ]
+  },
+  {
+    "id": "ch2-2_16",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 16,
+    "page": 214,
+    "bbox": [
+      0,
+      71,
+      270,
+      363
+    ]
+  },
+  {
+    "id": "ch2-2_17",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 17,
+    "page": 214,
+    "bbox": [
+      0,
+      347,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch2-2_18",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 18,
+    "page": 214,
+    "bbox": [
+      254,
+      69,
+      523,
+      366
+    ]
+  },
+  {
+    "id": "ch2-2_19",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 19,
+    "page": 214,
+    "bbox": [
+      254,
+      350,
+      523,
+      666
+    ]
+  },
+  {
+    "id": "ch2-2_20",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 20,
+    "page": 215,
+    "bbox": [
+      0,
+      70,
+      270,
+      228
+    ]
+  },
+  {
+    "id": "ch2-2_21",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 21,
+    "page": 215,
+    "bbox": [
+      0,
+      212,
+      270,
+      535
+    ]
+  },
+  {
+    "id": "ch2-2_22",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 22,
+    "page": 215,
+    "bbox": [
+      0,
+      519,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch2-2_23",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 23,
+    "page": 215,
+    "bbox": [
+      254,
+      67,
+      523,
+      465
+    ]
+  },
+  {
+    "id": "ch2-2_24",
+    "chapterId": "ch2-2",
+    "chapterTitle": "RC구조해석 일반사항",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 24,
+    "page": 215,
+    "bbox": [
+      254,
+      449,
+      523,
+      666
+    ]
+  },
+  {
+    "id": "ch2-3_3",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 3,
+    "page": 231,
+    "bbox": [
+      254,
+      123,
+      524,
+      399
+    ]
+  },
+  {
+    "id": "ch2-3_4",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 4,
+    "page": 231,
+    "bbox": [
+      254,
+      383,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch2-3_5",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 5,
+    "page": 232,
+    "bbox": [
+      0,
+      73,
+      269,
+      322
+    ]
+  },
+  {
+    "id": "ch2-3_6",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 6,
+    "page": 232,
+    "bbox": [
+      0,
+      306,
+      269,
+      668
+    ]
+  },
+  {
+    "id": "ch2-3_7",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 7,
+    "page": 231,
+    "bbox": [
+      0,
+      121,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch2-3_8",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 8,
+    "page": 232,
+    "bbox": [
+      253,
+      307,
+      523,
+      668
+    ]
+  },
+  {
+    "id": "ch2-3_9",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 9,
+    "page": 233,
+    "bbox": [
+      0,
+      70,
+      269,
+      365
+    ]
+  },
+  {
+    "id": "ch2-3_10",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 10,
+    "page": 233,
+    "bbox": [
+      0,
+      349,
+      269,
+      667
+    ]
+  },
+  {
+    "id": "ch2-3_11",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 11,
+    "page": 233,
+    "bbox": [
+      253,
+      72,
+      523,
+      365
+    ]
+  },
+  {
+    "id": "ch2-3_12",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 12,
+    "page": 233,
+    "bbox": [
+      253,
+      349,
+      523,
+      667
+    ]
+  },
+  {
+    "id": "ch2-3_13",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 13,
+    "page": 234,
+    "bbox": [
+      0,
+      74,
+      269,
+      379
+    ]
+  },
+  {
+    "id": "ch2-3_14",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 14,
+    "page": 234,
+    "bbox": [
+      0,
+      363,
+      269,
+      542
+    ]
+  },
+  {
+    "id": "ch2-3_15",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 15,
+    "page": 234,
+    "bbox": [
+      0,
+      526,
+      269,
+      669
+    ]
+  },
+  {
+    "id": "ch2-3_16",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 16,
+    "page": 234,
+    "bbox": [
+      253,
+      73,
+      523,
+      379
+    ]
+  },
+  {
+    "id": "ch2-3_17",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 17,
+    "page": 234,
+    "bbox": [
+      253,
+      363,
+      523,
+      669
+    ]
+  },
+  {
+    "id": "ch2-3_18",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 18,
+    "page": 235,
+    "bbox": [
+      0,
+      74,
+      271,
+      350
+    ]
+  },
+  {
+    "id": "ch2-3_19",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 19,
+    "page": 235,
+    "bbox": [
+      0,
+      334,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch2-3_20",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 20,
+    "page": 235,
+    "bbox": [
+      255,
+      72,
+      525,
+      349
+    ]
+  },
+  {
+    "id": "ch2-3_21",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 21,
+    "page": 235,
+    "bbox": [
+      255,
+      333,
+      525,
+      669
+    ]
+  },
+  {
+    "id": "ch2-3_22",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 22,
+    "page": 236,
+    "bbox": [
+      0,
+      70,
+      269,
+      334
+    ]
+  },
+  {
+    "id": "ch2-3_23",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 23,
+    "page": 236,
+    "bbox": [
+      0,
+      318,
+      269,
+      672
+    ]
+  },
+  {
+    "id": "ch2-3_24",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 24,
+    "page": 236,
+    "bbox": [
+      253,
+      71,
+      523,
+      335
+    ]
+  },
+  {
+    "id": "ch2-3_25",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 25,
+    "page": 236,
+    "bbox": [
+      253,
+      319,
+      523,
+      672
+    ]
+  },
+  {
+    "id": "ch2-3_26",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 26,
+    "page": 237,
+    "bbox": [
+      0,
+      72,
+      270,
+      439
+    ]
+  },
+  {
+    "id": "ch2-3_27",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 27,
+    "page": 237,
+    "bbox": [
+      0,
+      423,
+      270,
+      673
+    ]
+  },
+  {
+    "id": "ch2-3_28",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 28,
+    "page": 237,
+    "bbox": [
+      254,
+      72,
+      525,
+      288
+    ]
+  },
+  {
+    "id": "ch2-3_29",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 29,
+    "page": 237,
+    "bbox": [
+      254,
+      272,
+      525,
+      520
+    ]
+  },
+  {
+    "id": "ch2-3_30",
+    "chapterId": "ch2-3",
+    "chapterTitle": "RC 단철근 보 해석",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 30,
+    "page": 237,
+    "bbox": [
+      254,
+      504,
+      525,
+      673
+    ]
+  },
+  {
+    "id": "ch2-5_1",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 1,
+    "page": 261,
+    "bbox": [
+      0,
+      122,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch2-5_3",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 3,
+    "page": 261,
+    "bbox": [
+      254,
+      121,
+      524,
+      417
+    ]
+  },
+  {
+    "id": "ch2-5_4",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 4,
+    "page": 261,
+    "bbox": [
+      254,
+      401,
+      524,
+      667
+    ]
+  },
+  {
+    "id": "ch2-5_5",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 5,
+    "page": 262,
+    "bbox": [
+      0,
+      72,
+      271,
+      460
+    ]
+  },
+  {
+    "id": "ch2-5_6",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 6,
+    "page": 262,
+    "bbox": [
+      0,
+      444,
+      271,
+      667
+    ]
+  },
+  {
+    "id": "ch2-5_8",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 8,
+    "page": 262,
+    "bbox": [
+      255,
+      286,
+      526,
+      493
+    ]
+  },
+  {
+    "id": "ch2-5_9",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 9,
+    "page": 262,
+    "bbox": [
+      255,
+      477,
+      526,
+      667
+    ]
+  },
+  {
+    "id": "ch2-5_10",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 10,
+    "page": 263,
+    "bbox": [
+      0,
+      71,
+      271,
+      672
+    ]
+  },
+  {
+    "id": "ch2-5_11",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 11,
+    "page": 263,
+    "bbox": [
+      255,
+      69,
+      525,
+      244
+    ]
+  },
+  {
+    "id": "ch2-5_12",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 12,
+    "page": 263,
+    "bbox": [
+      255,
+      228,
+      525,
+      442
+    ]
+  },
+  {
+    "id": "ch2-5_13",
+    "chapterId": "ch2-5",
+    "chapterTitle": "RC 슬래브",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 13,
+    "page": 263,
+    "bbox": [
+      255,
+      426,
+      525,
+      672
+    ]
+  },
+  {
+    "id": "ch2-6_1",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 1,
+    "page": 273,
+    "bbox": [
+      0,
+      119,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch2-6_3",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 3,
+    "page": 273,
+    "bbox": [
+      254,
+      119,
+      524,
+      509
+    ]
+  },
+  {
+    "id": "ch2-6_4",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 4,
+    "page": 273,
+    "bbox": [
+      254,
+      493,
+      524,
+      667
+    ]
+  },
+  {
+    "id": "ch2-6_5",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 5,
+    "page": 274,
+    "bbox": [
+      0,
+      70,
+      270,
+      392
+    ]
+  },
+  {
+    "id": "ch2-6_6",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 6,
+    "page": 274,
+    "bbox": [
+      0,
+      376,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch2-6_8",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 8,
+    "page": 274,
+    "bbox": [
+      254,
+      374,
+      524,
+      667
+    ]
+  },
+  {
+    "id": "ch2-6_9",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 9,
+    "page": 275,
+    "bbox": [
+      0,
+      67,
+      270,
+      290
+    ]
+  },
+  {
+    "id": "ch2-6_10",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 10,
+    "page": 275,
+    "bbox": [
+      0,
+      274,
+      270,
+      530
+    ]
+  },
+  {
+    "id": "ch2-6_11",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 11,
+    "page": 275,
+    "bbox": [
+      0,
+      514,
+      270,
+      665
+    ]
+  },
+  {
+    "id": "ch2-6_12",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 12,
+    "page": 275,
+    "bbox": [
+      254,
+      69,
+      524,
+      409
+    ]
+  },
+  {
+    "id": "ch2-6_13",
+    "chapterId": "ch2-6",
+    "chapterTitle": "RC구조 사용성",
+    "partTitle": "철근콘크리트구조",
+    "partColor": "#E8644A",
+    "num": 13,
+    "page": 275,
+    "bbox": [
+      254,
+      393,
+      524,
+      665
+    ]
+  },
+  {
+    "id": "ch3-1_3",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 3,
+    "page": 300,
+    "bbox": [
+      0,
+      522,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch3-1_4",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 4,
+    "page": 300,
+    "bbox": [
+      254,
+      121,
+      524,
+      431
+    ]
+  },
+  {
+    "id": "ch3-1_5",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 5,
+    "page": 300,
+    "bbox": [
+      254,
+      415,
+      524,
+      668
+    ]
+  },
+  {
+    "id": "ch3-1_6",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 6,
+    "page": 301,
+    "bbox": [
+      0,
+      76,
+      271,
+      670
+    ]
+  },
+  {
+    "id": "ch3-1_8",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 8,
+    "page": 301,
+    "bbox": [
+      255,
+      73,
+      526,
+      460
+    ]
+  },
+  {
+    "id": "ch3-1_10",
+    "chapterId": "ch3-1",
+    "chapterTitle": "강구조 일반사항",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 10,
+    "page": 301,
+    "bbox": [
+      255,
+      444,
+      526,
+      670
+    ]
+  },
+  {
+    "id": "ch3-2_1",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 1,
+    "page": 308,
+    "bbox": [
+      0,
+      121,
+      270,
+      475
+    ]
+  },
+  {
+    "id": "ch3-2_3",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 3,
+    "page": 308,
+    "bbox": [
+      0,
+      459,
+      270,
+      673
+    ]
+  },
+  {
+    "id": "ch3-2_4",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 4,
+    "page": 308,
+    "bbox": [
+      254,
+      120,
+      524,
+      391
+    ]
+  },
+  {
+    "id": "ch3-2_5",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 5,
+    "page": 308,
+    "bbox": [
+      254,
+      375,
+      524,
+      673
+    ]
+  },
+  {
+    "id": "ch3-2_6",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 6,
+    "page": 309,
+    "bbox": [
+      0,
+      73,
+      271,
+      462
+    ]
+  },
+  {
+    "id": "ch3-2_8",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 8,
+    "page": 309,
+    "bbox": [
+      0,
+      446,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch3-2_9",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 9,
+    "page": 309,
+    "bbox": [
+      255,
+      73,
+      526,
+      306
+    ]
+  },
+  {
+    "id": "ch3-2_10",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 10,
+    "page": 309,
+    "bbox": [
+      255,
+      290,
+      526,
+      491
+    ]
+  },
+  {
+    "id": "ch3-2_11",
+    "chapterId": "ch3-2",
+    "chapterTitle": "강구조 접합(I) - 볼트",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 11,
+    "page": 309,
+    "bbox": [
+      255,
+      475,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch3-3_1",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 1,
+    "page": 320,
+    "bbox": [
+      0,
+      119,
+      269,
+      668
+    ]
+  },
+  {
+    "id": "ch3-3_5",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 5,
+    "page": 321,
+    "bbox": [
+      0,
+      74,
+      269,
+      355
+    ]
+  },
+  {
+    "id": "ch3-3_6",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 6,
+    "page": 321,
+    "bbox": [
+      0,
+      339,
+      269,
+      672
+    ]
+  },
+  {
+    "id": "ch3-3_8",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 8,
+    "page": 321,
+    "bbox": [
+      253,
+      342,
+      523,
+      672
+    ]
+  },
+  {
+    "id": "ch3-3_9",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 9,
+    "page": 322,
+    "bbox": [
+      0,
+      71,
+      269,
+      300
+    ]
+  },
+  {
+    "id": "ch3-3_10",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 10,
+    "page": 322,
+    "bbox": [
+      0,
+      284,
+      269,
+      479
+    ]
+  },
+  {
+    "id": "ch3-3_11",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 11,
+    "page": 322,
+    "bbox": [
+      0,
+      463,
+      269,
+      666
+    ]
+  },
+  {
+    "id": "ch3-3_13",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 13,
+    "page": 322,
+    "bbox": [
+      253,
+      407,
+      523,
+      666
+    ]
+  },
+  {
+    "id": "ch3-3_14",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 14,
+    "page": 323,
+    "bbox": [
+      0,
+      70,
+      269,
+      246
+    ]
+  },
+  {
+    "id": "ch3-3_15",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 15,
+    "page": 323,
+    "bbox": [
+      0,
+      230,
+      269,
+      456
+    ]
+  },
+  {
+    "id": "ch3-3_16",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 16,
+    "page": 323,
+    "bbox": [
+      0,
+      440,
+      269,
+      669
+    ]
+  },
+  {
+    "id": "ch3-3_17",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 17,
+    "page": 323,
+    "bbox": [
+      253,
+      73,
+      522,
+      333
+    ]
+  },
+  {
+    "id": "ch3-3_18",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 18,
+    "page": 323,
+    "bbox": [
+      253,
+      317,
+      522,
+      500
+    ]
+  },
+  {
+    "id": "ch3-3_19",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 19,
+    "page": 323,
+    "bbox": [
+      253,
+      484,
+      522,
+      669
+    ]
+  },
+  {
+    "id": "ch3-3_21",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 21,
+    "page": 324,
+    "bbox": [
+      0,
+      329,
+      270,
+      504
+    ]
+  },
+  {
+    "id": "ch3-3_22",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 22,
+    "page": 324,
+    "bbox": [
+      0,
+      488,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch3-3_23",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 23,
+    "page": 324,
+    "bbox": [
+      254,
+      70,
+      523,
+      371
+    ]
+  },
+  {
+    "id": "ch3-3_24",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 24,
+    "page": 324,
+    "bbox": [
+      254,
+      355,
+      523,
+      668
+    ]
+  },
+  {
+    "id": "ch3-3_25",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 25,
+    "page": 325,
+    "bbox": [
+      0,
+      72,
+      272,
+      396
+    ]
+  },
+  {
+    "id": "ch3-3_26",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 26,
+    "page": 325,
+    "bbox": [
+      0,
+      380,
+      272,
+      667
+    ]
+  },
+  {
+    "id": "ch3-3_27",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 27,
+    "page": 325,
+    "bbox": [
+      256,
+      71,
+      527,
+      395
+    ]
+  },
+  {
+    "id": "ch3-3_28",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 28,
+    "page": 325,
+    "bbox": [
+      256,
+      379,
+      527,
+      667
+    ]
+  },
+  {
+    "id": "ch3-3_29",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 29,
+    "page": 326,
+    "bbox": [
+      0,
+      72,
+      273,
+      394
+    ]
+  },
+  {
+    "id": "ch3-3_30",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 30,
+    "page": 326,
+    "bbox": [
+      0,
+      378,
+      273,
+      669
+    ]
+  },
+  {
+    "id": "ch3-3_31",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 31,
+    "page": 326,
+    "bbox": [
+      257,
+      72,
+      530,
+      257
+    ]
+  },
+  {
+    "id": "ch3-3_32",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 32,
+    "page": 326,
+    "bbox": [
+      257,
+      241,
+      530,
+      437
+    ]
+  },
+  {
+    "id": "ch3-3_33",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 33,
+    "page": 326,
+    "bbox": [
+      257,
+      421,
+      530,
+      669
+    ]
+  },
+  {
+    "id": "ch3-3_34",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 34,
+    "page": 327,
+    "bbox": [
+      0,
+      75,
+      270,
+      366
+    ]
+  },
+  {
+    "id": "ch3-3_35",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 35,
+    "page": 327,
+    "bbox": [
+      0,
+      350,
+      270,
+      522
+    ]
+  },
+  {
+    "id": "ch3-3_36",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 36,
+    "page": 327,
+    "bbox": [
+      0,
+      506,
+      270,
+      670
+    ]
+  },
+  {
+    "id": "ch3-3_37",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 37,
+    "page": 327,
+    "bbox": [
+      254,
+      74,
+      525,
+      442
+    ]
+  },
+  {
+    "id": "ch3-3_38",
+    "chapterId": "ch3-3",
+    "chapterTitle": "강구조 접합(II) - 용접",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 38,
+    "page": 327,
+    "bbox": [
+      254,
+      426,
+      525,
+      670
+    ]
+  },
+  {
+    "id": "ch3-4_3",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 3,
+    "page": 338,
+    "bbox": [
+      253,
+      117,
+      522,
+      387
+    ]
+  },
+  {
+    "id": "ch3-4_4",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 4,
+    "page": 338,
+    "bbox": [
+      253,
+      371,
+      522,
+      665
+    ]
+  },
+  {
+    "id": "ch3-4_5",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 5,
+    "page": 339,
+    "bbox": [
+      0,
+      73,
+      269,
+      272
+    ]
+  },
+  {
+    "id": "ch3-4_6",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 6,
+    "page": 339,
+    "bbox": [
+      0,
+      256,
+      269,
+      671
+    ]
+  },
+  {
+    "id": "ch3-4_8",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 8,
+    "page": 339,
+    "bbox": [
+      253,
+      75,
+      522,
+      365
+    ]
+  },
+  {
+    "id": "ch3-4_9",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 9,
+    "page": 339,
+    "bbox": [
+      253,
+      349,
+      522,
+      671
+    ]
+  },
+  {
+    "id": "ch3-4_10",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 10,
+    "page": 340,
+    "bbox": [
+      0,
+      73,
+      269,
+      487
+    ]
+  },
+  {
+    "id": "ch3-4_11",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 11,
+    "page": 340,
+    "bbox": [
+      0,
+      471,
+      269,
+      666
+    ]
+  },
+  {
+    "id": "ch3-4_12",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 12,
+    "page": 340,
+    "bbox": [
+      253,
+      322,
+      522,
+      666
+    ]
+  },
+  {
+    "id": "ch3-4_13",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 13,
+    "page": 341,
+    "bbox": [
+      0,
+      71,
+      271,
+      366
+    ]
+  },
+  {
+    "id": "ch3-4_14",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 14,
+    "page": 341,
+    "bbox": [
+      0,
+      350,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch3-4_15",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 15,
+    "page": 341,
+    "bbox": [
+      255,
+      74,
+      526,
+      372
+    ]
+  },
+  {
+    "id": "ch3-4_16",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 16,
+    "page": 341,
+    "bbox": [
+      255,
+      356,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch3-4_17",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 17,
+    "page": 342,
+    "bbox": [
+      0,
+      71,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch3-4_18",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 18,
+    "page": 342,
+    "bbox": [
+      255,
+      71,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch3-4_19",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 19,
+    "page": 343,
+    "bbox": [
+      0,
+      75,
+      269,
+      670
+    ]
+  },
+  {
+    "id": "ch3-4_20",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 20,
+    "page": 343,
+    "bbox": [
+      253,
+      73,
+      522,
+      436
+    ]
+  },
+  {
+    "id": "ch3-4_21",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 21,
+    "page": 343,
+    "bbox": [
+      253,
+      420,
+      522,
+      670
+    ]
+  },
+  {
+    "id": "ch3-4_22",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 22,
+    "page": 344,
+    "bbox": [
+      0,
+      73,
+      270,
+      306
+    ]
+  },
+  {
+    "id": "ch3-4_23",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 23,
+    "page": 344,
+    "bbox": [
+      0,
+      290,
+      270,
+      518
+    ]
+  },
+  {
+    "id": "ch3-4_24",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 24,
+    "page": 344,
+    "bbox": [
+      0,
+      502,
+      270,
+      670
+    ]
+  },
+  {
+    "id": "ch3-4_25",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 25,
+    "page": 344,
+    "bbox": [
+      254,
+      74,
+      524,
+      308
+    ]
+  },
+  {
+    "id": "ch3-4_26",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 26,
+    "page": 344,
+    "bbox": [
+      254,
+      292,
+      524,
+      670
+    ]
+  },
+  {
+    "id": "ch3-4_27",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 27,
+    "page": 345,
+    "bbox": [
+      0,
+      74,
+      270,
+      368
+    ]
+  },
+  {
+    "id": "ch3-4_28",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 28,
+    "page": 345,
+    "bbox": [
+      0,
+      352,
+      270,
+      671
+    ]
+  },
+  {
+    "id": "ch3-4_29",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 29,
+    "page": 345,
+    "bbox": [
+      254,
+      76,
+      524,
+      297
+    ]
+  },
+  {
+    "id": "ch3-4_30",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 30,
+    "page": 345,
+    "bbox": [
+      254,
+      281,
+      524,
+      504
+    ]
+  },
+  {
+    "id": "ch3-4_31",
+    "chapterId": "ch3-4",
+    "chapterTitle": "강구조 부재 설계",
+    "partTitle": "강구조",
+    "partColor": "#5DBB63",
+    "num": 31,
+    "page": 345,
+    "bbox": [
+      254,
+      488,
+      524,
+      671
+    ]
+  },
+  {
+    "id": "ch4-1_1",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 1,
+    "page": 354,
+    "bbox": [
+      0,
+      121,
+      269,
+      478
+    ]
+  },
+  {
+    "id": "ch4-1_3",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 3,
+    "page": 354,
+    "bbox": [
+      0,
+      462,
+      269,
+      668
+    ]
+  },
+  {
+    "id": "ch4-1_4",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 4,
+    "page": 354,
+    "bbox": [
+      253,
+      119,
+      522,
+      305
+    ]
+  },
+  {
+    "id": "ch4-1_5",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 5,
+    "page": 354,
+    "bbox": [
+      253,
+      289,
+      522,
+      479
+    ]
+  },
+  {
+    "id": "ch4-1_6",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 6,
+    "page": 354,
+    "bbox": [
+      253,
+      463,
+      522,
+      668
+    ]
+  },
+  {
+    "id": "ch4-1_8",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 8,
+    "page": 355,
+    "bbox": [
+      0,
+      252,
+      271,
+      464
+    ]
+  },
+  {
+    "id": "ch4-1_9",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 9,
+    "page": 355,
+    "bbox": [
+      0,
+      448,
+      271,
+      668
+    ]
+  },
+  {
+    "id": "ch4-1_10",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 10,
+    "page": 355,
+    "bbox": [
+      255,
+      72,
+      525,
+      464
+    ]
+  },
+  {
+    "id": "ch4-1_11",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 11,
+    "page": 355,
+    "bbox": [
+      255,
+      448,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch4-1_12",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 12,
+    "page": 356,
+    "bbox": [
+      0,
+      69,
+      270,
+      441
+    ]
+  },
+  {
+    "id": "ch4-1_13",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 13,
+    "page": 356,
+    "bbox": [
+      0,
+      425,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch4-1_14",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 14,
+    "page": 356,
+    "bbox": [
+      254,
+      70,
+      525,
+      295
+    ]
+  },
+  {
+    "id": "ch4-1_15",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 15,
+    "page": 356,
+    "bbox": [
+      254,
+      279,
+      525,
+      442
+    ]
+  },
+  {
+    "id": "ch4-1_16",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 16,
+    "page": 356,
+    "bbox": [
+      254,
+      426,
+      525,
+      666
+    ]
+  },
+  {
+    "id": "ch4-1_17",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 17,
+    "page": 357,
+    "bbox": [
+      0,
+      70,
+      270,
+      305
+    ]
+  },
+  {
+    "id": "ch4-1_18",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 18,
+    "page": 357,
+    "bbox": [
+      0,
+      289,
+      270,
+      494
+    ]
+  },
+  {
+    "id": "ch4-1_19",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 19,
+    "page": 357,
+    "bbox": [
+      0,
+      478,
+      270,
+      668
+    ]
+  },
+  {
+    "id": "ch4-1_20",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 20,
+    "page": 357,
+    "bbox": [
+      254,
+      72,
+      525,
+      457
+    ]
+  },
+  {
+    "id": "ch4-1_21",
+    "chapterId": "ch4-1",
+    "chapterTitle": "구조시스템",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 21,
+    "page": 357,
+    "bbox": [
+      254,
+      441,
+      525,
+      668
+    ]
+  },
+  {
+    "id": "ch4-2_1",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 1,
+    "page": 368,
+    "bbox": [
+      0,
+      120,
+      270,
+      488
+    ]
+  },
+  {
+    "id": "ch4-2_3",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 3,
+    "page": 368,
+    "bbox": [
+      0,
+      472,
+      270,
+      666
+    ]
+  },
+  {
+    "id": "ch4-2_4",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 4,
+    "page": 368,
+    "bbox": [
+      254,
+      119,
+      524,
+      312
+    ]
+  },
+  {
+    "id": "ch4-2_5",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 5,
+    "page": 368,
+    "bbox": [
+      254,
+      296,
+      524,
+      489
+    ]
+  },
+  {
+    "id": "ch4-2_6",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 6,
+    "page": 368,
+    "bbox": [
+      254,
+      473,
+      524,
+      666
+    ]
+  },
+  {
+    "id": "ch4-2_8",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 8,
+    "page": 369,
+    "bbox": [
+      0,
+      309,
+      269,
+      506
+    ]
+  },
+  {
+    "id": "ch4-2_9",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 9,
+    "page": 369,
+    "bbox": [
+      0,
+      490,
+      269,
+      667
+    ]
+  },
+  {
+    "id": "ch4-2_10",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 10,
+    "page": 369,
+    "bbox": [
+      253,
+      71,
+      523,
+      395
+    ]
+  },
+  {
+    "id": "ch4-2_11",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 11,
+    "page": 369,
+    "bbox": [
+      253,
+      379,
+      523,
+      667
+    ]
+  },
+  {
+    "id": "ch4-2_12",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 12,
+    "page": 370,
+    "bbox": [
+      0,
+      68,
+      269,
+      333
+    ]
+  },
+  {
+    "id": "ch4-2_13",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 13,
+    "page": 370,
+    "bbox": [
+      0,
+      317,
+      269,
+      665
+    ]
+  },
+  {
+    "id": "ch4-2_14",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 14,
+    "page": 370,
+    "bbox": [
+      253,
+      67,
+      523,
+      230
+    ]
+  },
+  {
+    "id": "ch4-2_15",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 15,
+    "page": 370,
+    "bbox": [
+      253,
+      214,
+      523,
+      463
+    ]
+  },
+  {
+    "id": "ch4-2_16",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 16,
+    "page": 370,
+    "bbox": [
+      253,
+      447,
+      523,
+      665
+    ]
+  },
+  {
+    "id": "ch4-2_17",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 17,
+    "page": 371,
+    "bbox": [
+      0,
+      74,
+      269,
+      256
+    ]
+  },
+  {
+    "id": "ch4-2_18",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 18,
+    "page": 371,
+    "bbox": [
+      0,
+      240,
+      269,
+      454
+    ]
+  },
+  {
+    "id": "ch4-2_19",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 19,
+    "page": 371,
+    "bbox": [
+      0,
+      438,
+      269,
+      671
+    ]
+  },
+  {
+    "id": "ch4-2_20",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 20,
+    "page": 371,
+    "bbox": [
+      253,
+      74,
+      522,
+      276
+    ]
+  },
+  {
+    "id": "ch4-2_21",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 21,
+    "page": 371,
+    "bbox": [
+      253,
+      260,
+      522,
+      455
+    ]
+  },
+  {
+    "id": "ch4-2_22",
+    "chapterId": "ch4-2",
+    "chapterTitle": "토질 및 기초",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 22,
+    "page": 371,
+    "bbox": [
+      253,
+      439,
+      522,
+      671
+    ]
+  },
+  {
+    "id": "ch4-3_1",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 1,
+    "page": 380,
+    "bbox": [
+      0,
+      123,
+      271,
+      300
+    ]
+  },
+  {
+    "id": "ch4-3_2",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 2,
+    "page": 380,
+    "bbox": [
+      0,
+      284,
+      271,
+      527
+    ]
+  },
+  {
+    "id": "ch4-3_3",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 3,
+    "page": 380,
+    "bbox": [
+      0,
+      511,
+      271,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_4",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 4,
+    "page": 380,
+    "bbox": [
+      255,
+      122,
+      526,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_5",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 5,
+    "page": 381,
+    "bbox": [
+      0,
+      74,
+      270,
+      373
+    ]
+  },
+  {
+    "id": "ch4-3_6",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 6,
+    "page": 381,
+    "bbox": [
+      0,
+      357,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_7",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 7,
+    "page": 385,
+    "bbox": [
+      0,
+      141,
+      269,
+      715
+    ]
+  },
+  {
+    "id": "ch4-3_8",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 8,
+    "page": 386,
+    "bbox": [
+      0,
+      94,
+      269,
+      236
+    ]
+  },
+  {
+    "id": "ch4-3_9",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 9,
+    "page": 381,
+    "bbox": [
+      254,
+      517,
+      525,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_10",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 10,
+    "page": 382,
+    "bbox": [
+      0,
+      72,
+      270,
+      272
+    ]
+  },
+  {
+    "id": "ch4-3_11",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 11,
+    "page": 382,
+    "bbox": [
+      0,
+      256,
+      270,
+      500
+    ]
+  },
+  {
+    "id": "ch4-3_12",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 12,
+    "page": 382,
+    "bbox": [
+      0,
+      484,
+      270,
+      667
+    ]
+  },
+  {
+    "id": "ch4-3_13",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 13,
+    "page": 382,
+    "bbox": [
+      254,
+      72,
+      524,
+      271
+    ]
+  },
+  {
+    "id": "ch4-3_14",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 14,
+    "page": 382,
+    "bbox": [
+      254,
+      255,
+      524,
+      499
+    ]
+  },
+  {
+    "id": "ch4-3_15",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 15,
+    "page": 382,
+    "bbox": [
+      254,
+      483,
+      524,
+      667
+    ]
+  },
+  {
+    "id": "ch4-3_16",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 16,
+    "page": 383,
+    "bbox": [
+      0,
+      73,
+      270,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_17",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 17,
+    "page": 383,
+    "bbox": [
+      254,
+      258,
+      523,
+      669
+    ]
+  },
+  {
+    "id": "ch4-3_18",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 18,
+    "page": 387,
+    "bbox": [
+      255,
+      91,
+      525,
+      235
+    ]
+  },
+  {
+    "id": "ch4-3_19",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 19,
+    "page": 387,
+    "bbox": [
+      255,
+      219,
+      525,
+      391
+    ]
+  },
+  {
+    "id": "ch4-3_20",
+    "chapterId": "ch4-3",
+    "chapterTitle": "내진 설계",
+    "partTitle": "건축구조 일반사항",
+    "partColor": "#9B59B6",
+    "num": 20,
+    "page": 387,
+    "bbox": [
+      255,
+      375,
+      525,
+      718
+    ]
+  }
+]
