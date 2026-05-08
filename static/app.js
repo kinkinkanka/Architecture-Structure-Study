@@ -1459,9 +1459,26 @@ function quizRender() {
   img.onerror = () => { img.alt = `문제 ${crop.num} 로드 실패`; };
   img.src = url;
 
-  counter.textContent = `문제 ${crop.num}  ·  ${QuizViewer.idx + 1} / ${crops.length}`;
+  // 카드 헤더
+  const badge = document.getElementById("prob-num-badge");
+  badge.textContent = `문제 ${crop.num}`;
+  badge.style.background = crop.partColor || "var(--accent)";
+  document.getElementById("prob-chapter-info").textContent =
+    `${crop.partTitle} › ${crop.chapterTitle}`;
+
+  counter.textContent = `${QuizViewer.idx + 1} / ${crops.length}`;
   btnPrev.disabled = QuizViewer.idx === 0;
   btnNext.disabled = QuizViewer.idx === crops.length - 1;
+
+  // 다음·이전 이미지 프리로드
+  [-1, 1, 2].forEach(offset => {
+    const i = QuizViewer.idx + offset;
+    if (i < 0 || i >= crops.length) return;
+    const c = crops[i];
+    const [a, b_, c_, d] = c.bbox;
+    const pre = new Image();
+    pre.src = `/api/crop-image/${c.page}?x0=${a}&y0=${b_}&x1=${c_}&y1=${d}`;
+  });
 }
 
 /* ===== AI 채팅 탭 ===== */

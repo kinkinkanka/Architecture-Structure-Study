@@ -37,7 +37,22 @@ CHAPTER_META = {
     "ch4-3":  ("내진 설계",            "건축구조 일반사항", "#9B59B6"),
 }
 
-NUM_PAT = re.compile(r"^(\d{1,2})\.\s")
+NUM_PAT    = re.compile(r"^(\d{1,2})\.\s")
+HAESUL_PAT = re.compile(r"해[절젤설]")
+
+def first_haesul_y(blocks, y_start, y_end, cx0, cx1):
+    """해당 컬럼·y범위 안에서 첫 해설 블록의 y0 반환, 없으면 y_end"""
+    for b in sorted(blocks, key=lambda x: x[1]):
+        x0, y0, x1, y1, text = b[:5]
+        if not (cx0 - 40 <= x0 <= cx1 + 40):
+            continue
+        if y0 <= y_start + 8:
+            continue
+        if y0 >= y_end:
+            break
+        if HAESUL_PAT.search(text.strip()):
+            return y0
+    return y_end
 
 def extract_page_crops(doc, page_1idx):
     page   = doc[page_1idx - 1]
@@ -98,9 +113,11 @@ def extract_page_crops(doc, page_1idx):
         crops = []
         for i, (num, sy0) in enumerate(starts):
             next_y = starts[i+1][1] if i+1 < len(starts) else answer_y
+            # 해설 시작 직전까지만 크롭
+            haesul_y = first_haesul_y(body, sy0, next_y, cx0, cx1)
             by0 = max(0,  sy0 - PAD)
-            by1 = min(ph, next_y + PAD)
-            if by1 - by0 < 20:      # 너무 작은 크롭 무시
+            by1 = min(ph, haesul_y)        # 해설 줄 바로 위까지
+            if by1 - by0 < 20:
                 continue
             crops.append({"num": num, "bbox": [
                 round(max(0, cx0 - PAD)),
