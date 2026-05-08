@@ -206,7 +206,7 @@ async function bootApp(username) {
   setupHighlighter();
   setupAnnotationModal();
   setupAnnDetail();
-  setupQuizTab();
+  await setupQuizTab();
   setupChatTab();
   setupGraphTab();
   setupModal();
@@ -1376,197 +1376,95 @@ function renderWelcomeStats() {
 }
 
 /* ===== 문제풀기 탭 ===== */
-function setupQuizTab() {
+const QuizViewer = {
+  pages: [],      // 현재 필터에 해당하는 페이지 번호 배열
+  idx: 0,         // 현재 페이지 인덱스
+  allPages: {},   // { chapterId: [pageNums...] }
+};
+
+async function setupQuizTab() {
+  // problem_pages.json 로드
+  try {
+    const res = await fetch("/api/problem-pages");
+    QuizViewer.allPages = await res.json();
+  } catch (_) {
+    QuizViewer.allPages = {};
+  }
+
   // 챕터 필터 옵션
   const sel = document.getElementById("quiz-chapter-filter");
   State.chapters.forEach(ch => {
+    const pages = QuizViewer.allPages[ch.id] || [];
+    if (!pages.length) return;
     const opt = document.createElement("option");
     opt.value = ch.id;
-    opt.textContent = `${ch.partTitle} › ${ch.title}`;
+    opt.textContent = `${ch.partTitle} › ${ch.title} (${pages.length}p)`;
     sel.appendChild(opt);
   });
 
-  // 모드 토글
-  document.querySelectorAll(".btn-mode").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".btn-mode").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      State.quizMode = btn.dataset.mode;
-      if (State.quizMode === "list") {
-        document.getElementById("quiz-card-mode").classList.add("hidden");
-        document.getElementById("quiz-list-mode").classList.remove("hidden");
-        renderProblemList();
-      } else {
-        document.getElementById("quiz-list-mode").classList.add("hidden");
-        document.getElementById("quiz-card-mode").classList.remove("hidden");
-      }
-    });
+  sel.addEventListener("change", () => quizLoadPages());
+  document.getElementById("btn-prob-prev").addEventListener("click", () => quizGoTo(QuizViewer.idx - 1));
+  document.getElementById("btn-prob-next").addEventListener("click", () => quizGoTo(QuizViewer.idx + 1));
+
+  // 키보드 좌/우 화살표
+  document.addEventListener("keydown", e => {
+    if (document.getElementById("tab-quiz").classList.contains("hidden")) return;
+    if (e.key === "ArrowLeft")  quizGoTo(QuizViewer.idx - 1);
+    if (e.key === "ArrowRight") quizGoTo(QuizViewer.idx + 1);
   });
 
-  // 챕터 필터 변경 시 목록 갱신
-  sel.addEventListener("change", () => {
-    if (State.quizMode === "list") renderProblemList();
-  });
-
-  // 시작
-  document.getElementById("btn-start-quiz").addEventListener("click", startCardQuiz);
-  document.getElementById("btn-show-answer").addEventListener("click", showQuizAnswer);
-  document.getElementById("btn-next-question").addEventListener("click", nextQuestion);
-  document.getElementById("btn-quiz-again").addEventListener("click", startCardQuiz);
+  quizLoadPages();
 }
 
-/* OCR 깨진 문제 판별 — 한글 비율 20% 미만이면 판독 불가 */
-function isReadableProblem(p) {
-  const text = (p.question || '') + (Array.isArray(p.options) ? p.options.join('') : '');
-  if (text.length < 10) return false;
-  const korean = (text.match(/[가-힣]/g) || []).length;
-  // 특수 OCR 오염 문자 비율
-  const junk   = (text.match(/[九令牛計帙積®©⊕⊙〒]/g) || []).length;
-  return (korean / text.length) >= 0.15 && (junk / text.length) < 0.04;
-}
-
-function filteredProblems() {
+function quizLoadPages() {
   const chId = document.getElementById("quiz-chapter-filter").value;
-  const base = chId ? State.problems.filter(p => p.chapterId === chId) : State.problems;
-  return base.filter(isReadableProblem);
-}
-
-/* ── 카드 퀴즈 ── */
-function startCardQuiz() {
-  const probs = filteredProblems();
-  if (!probs.length) { alert("해당 챕터에 문제가 없습니다."); return; }
-  State.quizQueue = shuffle([...probs]).slice(0, 20);
-  State.quizIndex = 0;
-
-  document.getElementById("quiz-start-screen").classList.add("hidden");
-  document.getElementById("quiz-done-screen").classList.add("hidden");
-  document.getElementById("quiz-card").classList.remove("hidden");
-  showQuestion();
-}
-
-function showQuestion() {
-  const q = State.quizQueue[State.quizIndex];
-  if (!q) return;
-  const total = State.quizQueue.length;
-  const pct   = Math.round((State.quizIndex / total) * 100);
-
-  document.getElementById("quiz-progress-text").textContent = `${State.quizIndex + 1} / ${total}`;
-  document.getElementById("quiz-progress-bar").style.width  = pct + "%";
-  document.getElementById("quiz-counter").textContent = `${State.quizIndex + 1} / ${total}`;
-
-  const tag = document.getElementById("quiz-chapter-tag");
-  tag.textContent = q.chapterTitle || "";
-  tag.style.background = q.partColor || "#888";
-  document.getElementById("quiz-num-label").textContent = `문제 ${q.num || state.quizIndex + 1}`;
-
-  document.getElementById("quiz-question").textContent = cleanText(q.question);
-  document.getElementById("quiz-answer-box").classList.add("hidden");
-  document.getElementById("btn-show-answer").classList.remove("hidden");
-  document.getElementById("btn-next-question").classList.add("hidden");
-
-  // 선택지
-  const optDiv = document.getElementById("quiz-options");
-  optDiv.innerHTML = "";
-  const nums = ["①","②","③","④"];
-  const options = q.options || [];
-  const correctIdx = extractCorrectIdx(q.answer);
-
-  if (options.length) {
-    options.slice(0, 4).forEach((opt, i) => {
-      const btn = document.createElement("button");
-      btn.className = "quiz-option";
-      btn.innerHTML = `<span class="option-num">${nums[i]}</span><span>${cleanText(opt)}</span>`;
-      btn.addEventListener("click", () => {
-        if (btn.disabled) return;
-        // 모든 옵션 비활성화
-        optDiv.querySelectorAll(".quiz-option").forEach(b => b.disabled = true);
-        if (correctIdx !== null) {
-          btn.classList.add(i === correctIdx ? "correct" : "wrong");
-          if (i === correctIdx) optDiv.querySelectorAll(".quiz-option")[correctIdx].classList.add("correct");
-          SFX.play(i === correctIdx ? "success" : "wrong");
-        } else {
-          btn.classList.add("selected");
-        }
-        showQuizAnswer();
+  if (chId) {
+    QuizViewer.pages = QuizViewer.allPages[chId] || [];
+  } else {
+    // 전체: 모든 챕터 페이지 합치되 순서 유지 & 중복 제거
+    const seen = new Set();
+    QuizViewer.pages = [];
+    State.chapters.forEach(ch => {
+      (QuizViewer.allPages[ch.id] || []).forEach(p => {
+        if (!seen.has(p)) { seen.add(p); QuizViewer.pages.push(p); }
       });
-      optDiv.appendChild(btn);
     });
   }
+  QuizViewer.idx = 0;
+  quizRender();
 }
 
-function extractCorrectIdx(answerText) {
-  if (!answerText) return null;
-  const m = answerText.match(/답\s*[：:]\s*([①②③④])/);
-  if (m) return ["①","②","③","④"].indexOf(m[1]);
-  const m2 = answerText.match(/답\s*[：:]\s*(\d)/);
-  if (m2) { const n = parseInt(m2[1]); if (n >= 1 && n <= 4) return n - 1; }
-  return null;
+function quizGoTo(idx) {
+  if (!QuizViewer.pages.length) return;
+  QuizViewer.idx = Math.max(0, Math.min(QuizViewer.pages.length - 1, idx));
+  quizRender();
 }
 
-function showQuizAnswer() {
-  const q = State.quizQueue[State.quizIndex];
-  if (!q) return;
-  const correctIdx = extractCorrectIdx(q.answer);
-  // 정답 옵션 하이라이트
-  if (correctIdx !== null) {
-    const opts = document.getElementById("quiz-options").querySelectorAll(".quiz-option");
-    if (opts[correctIdx]) opts[correctIdx].classList.add("correct");
-  }
-  document.getElementById("quiz-options").querySelectorAll(".quiz-option").forEach(b => b.disabled = true);
-  document.getElementById("quiz-answer-text").textContent = cleanText(q.answer || "해설 없음");
-  document.getElementById("quiz-answer-box").classList.remove("hidden");
-  document.getElementById("btn-show-answer").classList.add("hidden");
-  document.getElementById("btn-next-question").classList.remove("hidden");
-}
+function quizRender() {
+  const pages  = QuizViewer.pages;
+  const empty  = document.getElementById("quiz-empty");
+  const wrap   = document.getElementById("prob-card-wrap");
+  const img    = document.getElementById("prob-page-img");
+  const counter = document.getElementById("prob-page-counter");
+  const btnPrev = document.getElementById("btn-prob-prev");
+  const btnNext = document.getElementById("btn-prob-next");
 
-function nextQuestion() {
-  State.quizIndex++;
-  if (State.quizIndex >= State.quizQueue.length) {
-    document.getElementById("quiz-card").classList.add("hidden");
-    document.getElementById("quiz-done-screen").classList.remove("hidden");
-    document.getElementById("quiz-done-msg").textContent = `${State.quizQueue.length}문제를 모두 완료했습니다!`;
-    SFX.play("done");
+  if (!pages.length) {
+    empty.classList.remove("hidden");
+    wrap.classList.add("hidden");
+    counter.textContent = "";
+    btnPrev.disabled = btnNext.disabled = true;
     return;
   }
-  showQuestion();
-}
 
-/* ── 전체 목록 ── */
-function renderProblemList() {
-  const list  = document.getElementById("problem-list");
-  const probs = filteredProblems().slice(0, 120);
-  list.innerHTML = "";
-  if (!probs.length) {
-    list.innerHTML = "<p style='color:var(--text3);padding:24px'>문제가 없습니다.</p>";
-    return;
-  }
-  probs.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "problem-card";
-    const nums = ["①","②","③","④"];
-    const optsHtml = (p.options || []).slice(0, 4).map((o, i) =>
-      `<span class="problem-option-tag">${nums[i]} ${escHtml(cleanText(o))}</span>`
-    ).join("");
-    card.innerHTML = `
-      <div class="problem-card-header">
-        <span class="problem-num">문제 ${p.num}</span>
-        <span class="problem-chapter-badge" style="background:${p.partColor||'#888'}">${p.chapterTitle}</span>
-      </div>
-      <div class="problem-question">${escHtml(cleanText(p.question))}</div>
-      ${optsHtml ? `<div class="problem-options">${optsHtml}</div>` : ""}
-      <div class="problem-answer">${escHtml(cleanText(p.answer || "해설이 없습니다."))}</div>
-      <button class="btn-toggle-answer">정답/해설 보기 ▾</button>`;
+  empty.classList.add("hidden");
+  wrap.classList.remove("hidden");
 
-    const ans = card.querySelector(".problem-answer");
-    const btn = card.querySelector(".btn-toggle-answer");
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      ans.classList.toggle("visible");
-      btn.textContent = ans.classList.contains("visible") ? "접기 ▴" : "정답/해설 보기 ▾";
-      SFX.play(ans.classList.contains("visible") ? "open" : "click");
-    });
-    list.appendChild(card);
-  });
+  const pageNum = pages[QuizViewer.idx];
+  img.src = `/api/page-image/${pageNum}`;
+  counter.textContent = `${QuizViewer.idx + 1} / ${pages.length} 페이지`;
+  btnPrev.disabled = QuizViewer.idx === 0;
+  btnNext.disabled = QuizViewer.idx === pages.length - 1;
 }
 
 /* ===== AI 채팅 탭 ===== */

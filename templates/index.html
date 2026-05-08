@@ -217,61 +217,24 @@
     <div class="quiz-container">
       <!-- 툴바 -->
       <div class="quiz-toolbar">
-        <h2>✏️ 문제풀기</h2>
-        <select id="quiz-chapter-filter" class="select-input">
+        <h2 style="margin:0;font-size:16px;font-weight:700">✏️ 문제풀기</h2>
+        <select id="quiz-chapter-filter" class="select-input" style="flex:1;max-width:280px">
           <option value="">전체 챕터</option>
         </select>
-        <div class="mode-group">
-          <button class="btn-mode active" data-mode="card">카드 풀기</button>
-          <button class="btn-mode" data-mode="list">전체 목록</button>
-        </div>
-        <button class="btn-primary" id="btn-start-quiz">▶ 시작</button>
+        <span id="prob-page-counter" style="font-size:13px;color:var(--text3);white-space:nowrap"></span>
+        <button class="btn-icon" id="btn-prob-prev" disabled>◀</button>
+        <button class="btn-icon" id="btn-prob-next" disabled>▶</button>
       </div>
 
-      <!-- ── 카드 풀기 모드 ── -->
-      <div id="quiz-card-mode">
-        <!-- 시작 전 안내 -->
-        <div id="quiz-start-screen" style="text-align:center;padding:48px 0">
-          <div style="font-size:48px;margin-bottom:16px">✏️</div>
-          <h3 style="margin-bottom:8px">챕터를 선택하고 시작을 누르세요</h3>
-          <p style="color:var(--text2)">무작위 20문제가 카드 형식으로 출제됩니다</p>
-        </div>
-
-        <!-- 퀴즈 카드 -->
-        <div id="quiz-card" class="quiz-card hidden">
-          <div class="quiz-progress">
-            <span id="quiz-progress-text" style="font-size:12px;color:var(--text3)">0 / 0</span>
-            <div class="progress-bar"><div class="progress-fill" id="quiz-progress-bar" style="width:0%"></div></div>
-          </div>
-          <div class="quiz-meta">
-            <span class="quiz-chapter-tag" id="quiz-chapter-tag"></span>
-            <span class="quiz-num-label" id="quiz-num-label"></span>
-          </div>
-          <div class="quiz-question" id="quiz-question"></div>
-          <div class="quiz-options" id="quiz-options"></div>
-          <div class="quiz-answer-box hidden" id="quiz-answer-box">
-            <div class="ans-label">해설</div>
-            <div id="quiz-answer-text"></div>
-          </div>
-          <div class="quiz-nav">
-            <button class="btn-secondary" id="btn-show-answer">정답 보기</button>
-            <span class="quiz-counter" id="quiz-counter"></span>
-            <button class="btn-primary hidden" id="btn-next-question">다음 문제 →</button>
-          </div>
-        </div>
-
-        <!-- 완료 화면 -->
-        <div id="quiz-done-screen" class="hidden" style="text-align:center;padding:48px">
-          <div style="font-size:56px;margin-bottom:16px">🎉</div>
-          <h3 style="margin-bottom:8px">퀴즈 완료!</h3>
-          <p style="color:var(--text2);margin-bottom:24px" id="quiz-done-msg"></p>
-          <button class="btn-primary" id="btn-quiz-again">다시 풀기</button>
-        </div>
+      <!-- 빈 상태 -->
+      <div id="quiz-empty" style="text-align:center;padding:80px 0;color:var(--text3)">
+        <div style="font-size:48px;margin-bottom:16px">📄</div>
+        <p>챕터를 선택하면 핵심문제 페이지가 표시됩니다</p>
       </div>
 
-      <!-- ── 전체 목록 모드 ── -->
-      <div id="quiz-list-mode" class="hidden">
-        <div id="problem-list" class="problem-list"></div>
+      <!-- 페이지 이미지 카드 -->
+      <div id="prob-card-wrap" class="prob-card-wrap hidden">
+        <img id="prob-page-img" class="prob-page-img" src="" alt="문제 페이지" draggable="false">
       </div>
     </div>
   </div>

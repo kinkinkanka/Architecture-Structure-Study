@@ -8,7 +8,9 @@ import sqlite3
 import secrets
 from pathlib import Path
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, send_from_directory, Response, session
+import io
+import fitz as pymupdf
+from flask import Flask, render_template, request, jsonify, send_from_directory, Response, session, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -196,6 +198,38 @@ def get_graph():
             return jsonify(json.load(f))
     except FileNotFoundError:
         return jsonify({"error": "graph.json not found"}), 404
+
+
+@app.route("/api/problem-pages")
+def get_problem_pages():
+    try:
+        with open(DATA_DIR / "problem_pages.json", encoding="utf-8") as f:
+            return jsonify(json.load(f))
+    except FileNotFoundError:
+        return jsonify({}), 404
+
+
+@app.route("/api/page-image/<int:page_num>")
+def get_page_image(page_num):
+    """PDF 페이지를 PNG 이미지로 반환 (1-indexed)"""
+    if not PDF_PATH.exists():
+        return jsonify({"error": "PDF not found"}), 404
+    try:
+        doc = pymupdf.open(str(PDF_PATH))
+        if page_num < 1 or page_num > doc.page_count:
+            doc.close()
+            return jsonify({"error": "page out of range"}), 400
+        page = doc[page_num - 1]
+        pix = page.get_pixmap(matrix=pymupdf.Matrix(1.8, 1.8))
+        img_bytes = pix.tobytes("png")
+        doc.close()
+        return send_file(
+            io.BytesIO(img_bytes),
+            mimetype="image/png",
+            headers={"Cache-Control": "public, max-age=3600"}
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/chapters", methods=["POST"])
