@@ -223,11 +223,9 @@ def get_page_image(page_num):
         pix = page.get_pixmap(matrix=pymupdf.Matrix(1.8, 1.8))
         img_bytes = pix.tobytes("png")
         doc.close()
-        return send_file(
-            io.BytesIO(img_bytes),
-            mimetype="image/png",
-            headers={"Cache-Control": "public, max-age=3600"}
-        )
+        resp = send_file(io.BytesIO(img_bytes), mimetype="image/png")
+        resp.headers["Cache-Control"] = "public, max-age=3600"
+        return resp
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -1461,6 +1461,8 @@ function quizRender() {
   wrap.classList.remove("hidden");
 
   const pageNum = pages[QuizViewer.idx];
+  img.alt = "로딩 중...";
+  img.onerror = () => { img.alt = `페이지 ${pageNum} 로드 실패 (서버 로그 확인)`; };
   img.src = `/api/page-image/${pageNum}`;
   counter.textContent = `${QuizViewer.idx + 1} / ${pages.length} 페이지`;
   btnPrev.disabled = QuizViewer.idx === 0;
