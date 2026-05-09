@@ -238,8 +238,32 @@
           <div class="prob-card-header">
             <span id="prob-num-badge" class="prob-num-badge"></span>
             <span id="prob-chapter-info" class="prob-chapter-info"></span>
+            <span id="prob-result-badge" class="prob-result-badge hidden"></span>
           </div>
           <img id="prob-page-img" class="prob-page-img" src="" alt="" draggable="false">
+        </div>
+
+        <!-- 답안 선택 영역 -->
+        <div id="quiz-answer-section" class="quiz-answer-section hidden">
+          <div class="quiz-choice-row" id="quiz-choices">
+            <button class="quiz-choice-btn" data-choice="1">①</button>
+            <button class="quiz-choice-btn" data-choice="2">②</button>
+            <button class="quiz-choice-btn" data-choice="3">③</button>
+            <button class="quiz-choice-btn" data-choice="4">④</button>
+          </div>
+          <button class="btn-primary quiz-submit-btn" id="btn-quiz-submit">제출</button>
+          <div id="quiz-result-bar" class="quiz-result-bar hidden"></div>
+        </div>
+
+        <!-- AI 해설 영역 -->
+        <div id="quiz-explain-section" class="quiz-explain-section hidden">
+          <button class="quiz-explain-toggle" id="btn-quiz-explain">🤖 AI 해설 보기 ▼</button>
+          <div id="quiz-explain-content" class="quiz-explain-content hidden">
+            <div class="quiz-explain-loading hidden" id="quiz-explain-loading">
+              <div class="spinner-sm"></div> AI 해설 생성 중...
+            </div>
+            <div id="quiz-explain-text" class="quiz-explain-text"></div>
+          </div>
         </div>
       </div>
     </div>

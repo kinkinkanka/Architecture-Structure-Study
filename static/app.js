@@ -67,6 +67,7 @@ const State = {
   loggedIn: false, currentUser: null,
   quizQueue: [], quizIndex: 0,
   chatHistory: [],
+  quizHistory: {},
   graphData: null, selectedGraphNode: null,
   done:      new Set(JSON.parse(localStorage.getItem("ch_done")      || "[]")),
   bookmarks: new Set(JSON.parse(localStorage.getItem("ch_bookmarks") || "[]")),
@@ -1377,10 +1378,43 @@ function renderWelcomeStats() {
 
 /* ===== 문제풀기 탭 ===== */
 const QuizViewer = {
-  crops: [],      // 현재 필터에 해당하는 크롭 배열
+  crops: [],
   idx:   0,
-  allCrops: [],   // 전체 크롭 목록
+  allCrops: [],
+  selectedChoice: null,   // 현재 선택한 번호 (1-4)
+  explainOpen: false,
 };
+
+const _imgPreloadSet = new Set();  // 이미 프리로드 요청한 URL
+
+function cropUrl(crop) {
+  const [x0, y0, x1, y1] = crop.bbox;
+  return `/api/crop-image/${crop.page}?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}`;
+}
+
+function preloadCropImages(crops, fromIdx) {
+  const N = crops.length;
+  const order = [];
+  for (let d = 0; d < N; d++) {
+    if (fromIdx + d < N)    order.push(fromIdx + d);
+    if (d > 0 && fromIdx - d >= 0) order.push(fromIdx - d);
+  }
+  let active = 0;
+  const MAX = 4;
+  let i = 0;
+  function next() {
+    while (active < MAX && i < order.length) {
+      const url = cropUrl(crops[order[i++]]);
+      if (_imgPreloadSet.has(url)) { continue; }
+      _imgPreloadSet.add(url);
+      active++;
+      const im = new Image();
+      im.onload = im.onerror = () => { active--; next(); };
+      im.src = url;
+    }
+  }
+  next();
+}
 
 async function setupQuizTab() {
   try {
@@ -1388,6 +1422,14 @@ async function setupQuizTab() {
     QuizViewer.allCrops = await res.json();
   } catch (_) {
     QuizViewer.allCrops = [];
+  }
+
+  // 퀴즈 결과 로드
+  if (State.loggedIn) {
+    try {
+      const r = await fetch("/api/quiz-results");
+      if (r.ok) State.quizHistory = await r.json();
+    } catch (_) {}
   }
 
   // 챕터 필터 옵션
@@ -1402,7 +1444,12 @@ async function setupQuizTab() {
     sel.appendChild(opt);
   });
 
-  sel.addEventListener("change", () => { QuizViewer.idx = 0; quizRender(); });
+  sel.addEventListener("change", () => {
+    QuizViewer.idx = 0;
+    _imgPreloadSet.clear();
+    quizRender();
+    preloadCropImages(quizCurrentCrops(), 0);
+  });
 
   document.getElementById("btn-prob-prev").addEventListener("click", () => {
     QuizViewer.idx = Math.max(0, QuizViewer.idx - 1);
@@ -1413,13 +1460,30 @@ async function setupQuizTab() {
     quizRender();
   });
 
+  // 답안 선택 버튼
+  document.querySelectorAll(".quiz-choice-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      QuizViewer.selectedChoice = parseInt(btn.dataset.choice);
+      document.querySelectorAll(".quiz-choice-btn").forEach(b => b.classList.toggle("selected", b === btn));
+    });
+  });
+
+  // 제출 버튼
+  document.getElementById("btn-quiz-submit").addEventListener("click", quizSubmit);
+
+  // AI 해설 토글
+  document.getElementById("btn-quiz-explain").addEventListener("click", quizToggleExplain);
+
   document.addEventListener("keydown", e => {
     if (document.getElementById("tab-quiz").classList.contains("hidden")) return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
     if (e.key === "ArrowLeft")  { QuizViewer.idx = Math.max(0, QuizViewer.idx - 1); quizRender(); }
     if (e.key === "ArrowRight") { QuizViewer.idx = Math.min(quizCurrentCrops().length - 1, QuizViewer.idx + 1); quizRender(); }
   });
 
   quizRender();
+  preloadCropImages(quizCurrentCrops(), 0);
 }
 
 function quizCurrentCrops() {
@@ -1443,22 +1507,30 @@ function quizRender() {
     wrap.classList.add("hidden");
     counter.textContent = "";
     btnPrev.disabled = btnNext.disabled = true;
+    quizUpdateStats([]);
     return;
   }
 
-  // idx 경계 보정
   QuizViewer.idx = Math.max(0, Math.min(crops.length - 1, QuizViewer.idx));
+  QuizViewer.selectedChoice = null;
+  QuizViewer.explainOpen = false;
   const crop = crops[QuizViewer.idx];
+  const hist = State.quizHistory[crop.id] || null;
 
   empty.classList.add("hidden");
   wrap.classList.remove("hidden");
 
-  const [x0, y0, x1, y1] = crop.bbox;
-  const url = `/api/crop-image/${crop.page}?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}`;
+  // 이미지 (프리로드됐으면 즉시, 아니면 페이드)
+  const url = cropUrl(crop);
   img.alt = `문제 ${crop.num}`;
-  img.style.opacity = "0.4";
-  img.onload  = () => { img.style.opacity = "1"; };
-  img.onerror = () => { img.style.opacity = "1"; img.alt = `문제 ${crop.num} - 이미지 로드 실패`; };
+  if (!_imgPreloadSet.has(url)) {
+    img.style.opacity = "0.3";
+    img.onload  = () => { img.style.opacity = "1"; };
+    img.onerror = () => { img.style.opacity = "1"; };
+  } else {
+    img.style.opacity = "1";
+    img.onload = img.onerror = null;
+  }
   img.src = url;
 
   // 카드 헤더
@@ -1468,19 +1540,181 @@ function quizRender() {
   document.getElementById("prob-chapter-info").textContent =
     `${crop.partTitle} › ${crop.chapterTitle}`;
 
+  // 기존 결과 배지
+  const resBadge = document.getElementById("prob-result-badge");
+  if (hist) {
+    resBadge.classList.remove("hidden", "correct", "wrong");
+    resBadge.classList.add(hist.correct ? "correct" : "wrong");
+    resBadge.textContent = hist.correct ? `✓ 정답 (${hist.attempts}회)` : `✗ 오답 (${hist.attempts}회)`;
+  } else {
+    resBadge.classList.add("hidden");
+  }
+
   counter.textContent = `${QuizViewer.idx + 1} / ${crops.length}`;
   btnPrev.disabled = QuizViewer.idx === 0;
   btnNext.disabled = QuizViewer.idx === crops.length - 1;
 
-  // 다음·이전 이미지 프리로드
-  [-1, 1, 2].forEach(offset => {
-    const i = QuizViewer.idx + offset;
-    if (i < 0 || i >= crops.length) return;
-    const c = crops[i];
-    const [a, b_, c_, d] = c.bbox;
-    const pre = new Image();
-    pre.src = `/api/crop-image/${c.page}?x0=${a}&y0=${b_}&x1=${c_}&y1=${d}`;
+  // 답안 영역
+  const ansSection     = document.getElementById("quiz-answer-section");
+  const resultBar      = document.getElementById("quiz-result-bar");
+  const explainSection = document.getElementById("quiz-explain-section");
+  const explainContent = document.getElementById("quiz-explain-content");
+  const explainText    = document.getElementById("quiz-explain-text");
+
+  if (crop.answer !== null && crop.answer !== undefined) {
+    ansSection.classList.remove("hidden");
+    explainSection.classList.remove("hidden");
+  } else {
+    ansSection.classList.add("hidden");
+    explainSection.classList.add("hidden");
+  }
+
+  // 버튼 초기화
+  document.querySelectorAll(".quiz-choice-btn").forEach(b => {
+    b.classList.remove("selected","correct","wrong","reveal");
+    b.disabled = false;
   });
+  document.getElementById("btn-quiz-submit").classList.remove("hidden");
+  resultBar.classList.add("hidden");
+  explainContent.classList.add("hidden");
+  explainText.innerHTML = "";
+  document.getElementById("btn-quiz-explain").textContent = "🤖 AI 해설 보기 ▼";
+
+  // 이미 답한 경우 결과 표시
+  if (hist) {
+    quizShowResult(crop, hist.selectedAnswer, hist.correct);
+  }
+
+  quizUpdateStats(crops);
+}
+
+function quizShowResult(crop, selected, isCorrect) {
+  const resultBar = document.getElementById("quiz-result-bar");
+  const submitBtn = document.getElementById("btn-quiz-submit");
+  const labels = {1:"①", 2:"②", 3:"③", 4:"④"};
+
+  document.querySelectorAll(".quiz-choice-btn").forEach(b => {
+    b.disabled = true;
+    const c = parseInt(b.dataset.choice);
+    if (c === selected && !isCorrect)  b.classList.add("wrong");
+    if (c === crop.answer)             b.classList.add(isCorrect && c===selected ? "correct" : "reveal");
+  });
+
+  resultBar.classList.remove("hidden","correct","wrong");
+  resultBar.classList.add(isCorrect ? "correct" : "wrong");
+  resultBar.textContent = isCorrect
+    ? `✅ 정답입니다! (${labels[selected]}번)`
+    : `❌ 틀렸습니다. 정답: ${labels[crop.answer]}번`;
+
+  submitBtn.classList.add("hidden");
+}
+
+async function quizSubmit() {
+  const crops = quizCurrentCrops();
+  const crop  = crops[QuizViewer.idx];
+  if (!crop || QuizViewer.selectedChoice === null) {
+    alert("선택지를 먼저 클릭하세요.");
+    return;
+  }
+
+  const selected   = QuizViewer.selectedChoice;
+  const isCorrect  = (selected === crop.answer);
+
+  quizShowResult(crop, selected, isCorrect);
+
+  // 히스토리 저장
+  const prev = State.quizHistory[crop.id];
+  State.quizHistory[crop.id] = {
+    selectedAnswer: selected,
+    correct: isCorrect,
+    attempts: (prev?.attempts || 0) + 1,
+  };
+
+  // 서버 저장
+  if (State.loggedIn) {
+    fetch("/api/quiz-result", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({problem_id: crop.id, selected_answer: selected, correct: isCorrect}),
+    }).catch(() => {});
+  }
+
+  // 결과 배지 업데이트
+  const resBadge = document.getElementById("prob-result-badge");
+  const hist = State.quizHistory[crop.id];
+  resBadge.classList.remove("hidden","correct","wrong");
+  resBadge.classList.add(isCorrect ? "correct" : "wrong");
+  resBadge.textContent = isCorrect ? `✓ 정답 (${hist.attempts}회)` : `✗ 오답 (${hist.attempts}회)`;
+
+  quizUpdateStats(quizCurrentCrops());
+  SFX.play(isCorrect ? "success" : "wrong");
+}
+
+async function quizToggleExplain() {
+  const content  = document.getElementById("quiz-explain-content");
+  const loading  = document.getElementById("quiz-explain-loading");
+  const text     = document.getElementById("quiz-explain-text");
+  const btn      = document.getElementById("btn-quiz-explain");
+  const isOpen   = !content.classList.contains("hidden");
+
+  if (isOpen) {
+    content.classList.add("hidden");
+    btn.textContent = "🤖 AI 해설 보기 ▼";
+    return;
+  }
+
+  content.classList.remove("hidden");
+  btn.textContent = "🤖 AI 해설 닫기 ▲";
+
+  if (text.innerHTML.trim()) return;  // 이미 로드됨
+
+  const crops = quizCurrentCrops();
+  const crop  = crops[QuizViewer.idx];
+  if (!crop) return;
+
+  loading.classList.remove("hidden");
+  text.innerHTML = "";
+
+  try {
+    const res = await fetch("/api/quiz-explain", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        problem_id: crop.id,
+        answer: crop.answer,
+        page: crop.page,
+        bbox: crop.bbox,
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    text.innerHTML = renderMarkdown(data.explanation);
+    if (window.renderMathInElement) {
+      renderMathInElement(text, {
+        delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}],
+        throwOnError: false,
+      });
+    }
+  } catch (e) {
+    text.innerHTML = `<span style="color:var(--danger)">해설 로드 실패: ${escHtml(e.message)}</span>`;
+  } finally {
+    loading.classList.add("hidden");
+  }
+}
+
+function quizUpdateStats(crops) {
+  const counter = document.getElementById("prob-page-counter");
+  if (!crops.length) { counter.textContent = ""; return; }
+  const total    = crops.length;
+  const answered = crops.filter(c => State.quizHistory[c.id]).length;
+  const correct  = crops.filter(c => State.quizHistory[c.id]?.correct).length;
+  const idx      = QuizViewer.idx;
+  counter.innerHTML =
+    `<span>${idx + 1} / ${total}</span>` +
+    (answered ? `&ensp;<span class="quiz-stats-bar">` +
+      `<span class="stat-ok">✓${correct}</span> / ` +
+      `<span class="stat-bad">✗${answered - correct}</span>` +
+    `</span>` : "");
 }
 
 /* ===== AI 채팅 탭 ===== */

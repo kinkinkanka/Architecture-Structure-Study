@@ -6,6 +6,7 @@ import os
 import json
 import sqlite3
 import secrets
+import base64
 from pathlib import Path
 from functools import wraps
 import io
@@ -27,7 +28,7 @@ FORMATTED_DIR = DATA_DIR / "formatted"
 DB_PATH = Path(os.environ.get("DB_PATH", str(BASE_DIR / "users.db")))
 
 # PDF 경로: 환경변수 우선, 없으면 앱 폴더 내 파일 탐색
-_pdf_env = os.environ.get("PDF_PATH")
+_pdf_env  = os.environ.get("PDF_PATH")
 if _pdf_env:
     PDF_PATH = Path(_pdf_env)
 else:
@@ -36,6 +37,15 @@ else:
         Path(r"g:\내 드라이브\Main\2026\건축기사\실기\구조\건축기사 구조_ocr.pdf"),
     ]
     PDF_PATH = next((p for p in _candidates if p.exists()), _candidates[0])
+
+# PDF 문서 싱글톤 (요청마다 열지 않음)
+_pdf_doc = None
+
+def get_pdf_doc():
+    global _pdf_doc
+    if _pdf_doc is None and PDF_PATH.exists():
+        _pdf_doc = pymupdf.open(str(PDF_PATH))
+    return _pdf_doc
 
 # ──── DB 초기화 ────────────────────────────────────────────
 def get_db():
@@ -58,6 +68,20 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (user_id, data_key),
             FOREIGN KEY (user_id) REFERENCES users(id)
+        )""")
+        conn.execute("""CREATE TABLE IF NOT EXISTS explanations (
+            problem_id  TEXT PRIMARY KEY,
+            explanation TEXT NOT NULL,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )""")
+        conn.execute("""CREATE TABLE IF NOT EXISTS quiz_results (
+            user_id         INTEGER NOT NULL,
+            problem_id      TEXT    NOT NULL,
+            selected_answer INTEGER NOT NULL,
+            correct         INTEGER NOT NULL,
+            attempts        INTEGER NOT NULL DEFAULT 1,
+            last_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, problem_id)
         )""")
 
 init_db()
@@ -212,17 +236,15 @@ def get_problem_pages():
 @app.route("/api/page-image/<int:page_num>")
 def get_page_image(page_num):
     """PDF 페이지를 PNG 이미지로 반환 (1-indexed)"""
-    if not PDF_PATH.exists():
+    doc = get_pdf_doc()
+    if not doc:
         return jsonify({"error": "PDF not found"}), 404
     try:
-        doc = pymupdf.open(str(PDF_PATH))
         if page_num < 1 or page_num > doc.page_count:
-            doc.close()
             return jsonify({"error": "page out of range"}), 400
         page = doc[page_num - 1]
-        pix = page.get_pixmap(matrix=pymupdf.Matrix(1.8, 1.8))
+        pix  = page.get_pixmap(matrix=pymupdf.Matrix(1.8, 1.8))
         img_bytes = pix.tobytes("png")
-        doc.close()
         resp = send_file(io.BytesIO(img_bytes), mimetype="image/png")
         resp.headers["Cache-Control"] = "public, max-age=3600"
         return resp
@@ -234,26 +256,138 @@ def get_page_image(page_num):
 def get_crop_image(page_num):
     """PDF 페이지 특정 영역을 크롭한 PNG 반환
     Query: x0, y0, x1, y1 (PDF 좌표계 포인트)"""
-    if not PDF_PATH.exists():
+    doc = get_pdf_doc()
+    if not doc:
         return jsonify({"error": "PDF not found"}), 404
     try:
         x0 = float(request.args.get("x0", 0))
         y0 = float(request.args.get("y0", 0))
         x1 = float(request.args.get("x1", 0))
         y1 = float(request.args.get("y1", 0))
-
         SCALE = 2.0
-        doc  = pymupdf.open(str(PDF_PATH))
         page = doc[page_num - 1]
         clip = pymupdf.Rect(x0, y0, x1, y1)
         pix  = page.get_pixmap(matrix=pymupdf.Matrix(SCALE, SCALE), clip=clip)
         img_bytes = pix.tobytes("png")
-        doc.close()
         resp = send_file(io.BytesIO(img_bytes), mimetype="image/png")
         resp.headers["Cache-Control"] = "public, max-age=86400"
         return resp
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/quiz-explain", methods=["POST"])
+def quiz_explain():
+    """문제 AI 해설 (DB 캐시 우선, 없으면 OpenAI Vision 생성)"""
+    data       = request.get_json() or {}
+    problem_id = data.get("problem_id", "")
+    answer     = data.get("answer")      # 1-4 (correct answer)
+    page       = data.get("page")
+    bbox       = data.get("bbox")        # [x0,y0,x1,y1]
+
+    if not problem_id:
+        return jsonify({"error": "problem_id 필요"}), 400
+
+    # 캐시 확인
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT explanation FROM explanations WHERE problem_id=?", (problem_id,)
+        ).fetchone()
+    if row:
+        return jsonify({"explanation": row["explanation"]})
+
+    # OpenAI 생성
+    client = get_openai_client()
+    if not client:
+        return jsonify({"error": "OPENAI_API_KEY가 설정되지 않았습니다."}), 503
+
+    # PDF에서 직접 크롭 이미지 생성
+    doc = get_pdf_doc()
+    if not doc or not page or not bbox:
+        return jsonify({"error": "PDF 또는 좌표 정보 없음"}), 503
+
+    try:
+        pg   = doc[int(page) - 1]
+        clip = pymupdf.Rect(*bbox)
+        pix  = pg.get_pixmap(matrix=pymupdf.Matrix(2.0, 2.0), clip=clip)
+        img_b64 = base64.b64encode(pix.tobytes("png")).decode()
+    except Exception as e:
+        return jsonify({"error": f"이미지 생성 실패: {e}"}), 500
+
+    labels = {1:"①", 2:"②", 3:"③", 4:"④"}
+    answer_label = labels.get(answer, "?")
+    prompt = (
+        f"건축기사 구조 시험 문제입니다. 정답은 {answer_label}번입니다. "
+        "왜 이것이 정답인지 단계별로 간결하게 설명해주세요. "
+        "수식은 LaTeX($...$)로 표현하고 한국어로 답하세요."
+    ) if answer else (
+        "건축기사 구조 시험 문제입니다. 이 문제를 분석하고 풀이과정을 설명해주세요. "
+        "수식은 LaTeX($...$)로 표현하고 한국어로 답하세요."
+    )
+
+    try:
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=900,
+            messages=[{"role": "user", "content": [
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/png;base64,{img_b64}"}},
+                {"type": "text", "text": prompt},
+            ]}]
+        )
+        explanation = resp.choices[0].message.content
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    # 캐시 저장
+    with get_db() as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO explanations (problem_id, explanation) VALUES (?,?)",
+            (problem_id, explanation)
+        )
+    return jsonify({"explanation": explanation})
+
+
+@app.route("/api/quiz-result", methods=["POST"])
+@login_required
+def save_quiz_result():
+    """퀴즈 결과 저장 (정답 여부, 선택 답, 횟수)"""
+    data            = request.get_json() or {}
+    problem_id      = data.get("problem_id", "")
+    selected_answer = int(data.get("selected_answer", 0))
+    correct         = int(bool(data.get("correct")))
+    if not problem_id:
+        return jsonify({"error": "problem_id 필요"}), 400
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO quiz_results (user_id,problem_id,selected_answer,correct,attempts,last_at)
+               VALUES (?,?,?,?,1,CURRENT_TIMESTAMP)
+               ON CONFLICT(user_id,problem_id) DO UPDATE SET
+                 selected_answer=excluded.selected_answer,
+                 correct=excluded.correct,
+                 attempts=attempts+1,
+                 last_at=excluded.last_at""",
+            (session["user_id"], problem_id, selected_answer, correct)
+        )
+    return jsonify({"ok": True})
+
+
+@app.route("/api/quiz-results")
+@login_required
+def get_quiz_results():
+    """사용자의 전체 퀴즈 결과 반환"""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT problem_id,selected_answer,correct,attempts FROM quiz_results WHERE user_id=?",
+            (session["user_id"],)
+        ).fetchall()
+    return jsonify({
+        r["problem_id"]: {
+            "selectedAnswer": r["selected_answer"],
+            "correct": bool(r["correct"]),
+            "attempts": r["attempts"],
+        } for r in rows
+    })
 
 
 @app.route("/api/chapters", methods=["POST"])

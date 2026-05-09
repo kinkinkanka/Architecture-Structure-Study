@@ -42,32 +42,48 @@ HAESUL_PAT  = re.compile(r"[해하][절젤설]")
 # 4번 선택지 패턴 (크롭 하단 경계용) - 줄 시작에만 매칭해 수식 내 (4) 오탐 방지
 CHOICE4_PAT = re.compile(r"(?m)^[ \t]*(?:[④⑷]|[\(\（]4[\)\）])")
 
-ANSWER_NUM_PAT = re.compile(r"(\d+)\.")
+# 해답 줄 정답 기호 파싱
+_CHOICE_MAP = {"①":1,"②":2,"③":3,"④":4,"⑤":5,"⑴":1,"⑵":2,"⑶":3,"⑷":4}
+_CHOICE_RE  = re.compile(r"([①②③④⑤⑴⑵⑶⑷]|\([1-5]\))")
+_NUM_DOT_RE = re.compile(r"(\d+)[\.．]\s*")
+
+def _parse_choice(ch):
+    if ch in _CHOICE_MAP:
+        return _CHOICE_MAP[ch]
+    m = re.match(r"\(([1-5])\)", ch)
+    return int(m.group(1)) if m else None
 
 
 def parse_answer_line(blocks, ph):
     """
-    해답 줄에서 문제 번호 목록 반환.
-    OCR 변형 수정: 텍스트 순서가 내림차순이면 직전 번호+1로 교정.
-    예) '5. ④ 6. ④ 1. ③ 8. ③' → [5,6,7,8]  (1→7 OCR 오인 수정)
+    해답 줄 파싱 → {문제번호: 정답번호(1-4) or None}.
+    - 정답 기호(①~④)가 있으면 숫자, 없으면 None.
+    - 문제번호는 모두 expected_nums에 포함(크롭 탐지용).
+    - 번호 순서가 내림차순이면 직전+1로 교정(OCR 오인 수정).
     """
     for b in sorted(blocks, key=lambda x: -x[1]):
         if b[1] < ph * 0.60:
             break
         text = b[4]
         if "해답" in text or "정답" in text:
-            nums_in_order = [int(m.group(1)) for m in ANSWER_NUM_PAT.finditer(text)]
-            if len(nums_in_order) < 2:
+            raw = []
+            for m in _NUM_DOT_RE.finditer(text):
+                n = int(m.group(1))
+                # 번호 바로 뒤 텍스트에서 선택지 기호 탐지
+                after = text[m.end():]
+                cm = _CHOICE_RE.match(after)
+                a = _parse_choice(cm.group(1)) if cm else None
+                raw.append((n, a))
+            if len(raw) < 2:
                 continue
-            # 순서가 줄어드는 위치는 OCR 오인 → 직전+1로 교정
+            # 번호 순서 교정 (답은 페어 유지)
             fixed = []
-            for n in nums_in_order:
-                if fixed and n < fixed[-1]:
-                    fixed.append(fixed[-1] + 1)
-                else:
-                    fixed.append(n)
-            return sorted(set(fixed))
-    return []
+            for n, a in raw:
+                if fixed and n < fixed[-1][0]:
+                    n = fixed[-1][0] + 1
+                fixed.append((n, a))
+            return {n: a for n, a in fixed}
+    return {}
 
 
 def match_num_validated(text, expected_nums):
@@ -272,8 +288,9 @@ def extract_page_crops(doc, page_1idx):
     ph     = page.rect.height
     blocks = [b for b in page.get_text("blocks") if b[6] == 0]
 
-    # 해답 줄 → expected problem 번호 (없으면 빈 set = fallback 모드)
-    expected_nums = set(parse_answer_line(blocks, ph))
+    # 해답 줄 → {문제번호: 정답(1-4)} (없으면 빈 dict = fallback 모드)
+    answer_dict   = parse_answer_line(blocks, ph)
+    expected_nums = set(answer_dict.keys())
 
     # 헤더 y
     header_y = 0
@@ -323,14 +340,19 @@ def extract_page_crops(doc, page_1idx):
 
         left_crops  = make_crops(left_starts,  0,    half, pw, body, answer_y, ph)
         right_crops = make_crops(right_starts, half, pw,   pw, body, answer_y, ph)
-        return left_crops + right_crops
+        crops = left_crops + right_crops
 
     else:
         # 1컬럼
         starts = get_starts_in_col(body, 0, pw, expected_nums)
         if expected_nums:
             starts = fill_missing_by_interp(starts, sorted(expected_nums), answer_y)
-        return make_crops(starts, 0, pw, pw, body, answer_y, ph)
+        crops = make_crops(starts, 0, pw, pw, body, answer_y, ph)
+
+    # 정답 주석
+    for c in crops:
+        c["answer"] = answer_dict.get(c["num"])
+    return crops
 
 
 def main():
@@ -361,6 +383,7 @@ def main():
                     "num":          c["num"],
                     "page":         page_num,
                     "bbox":         c["bbox"],
+                    "answer":       c.get("answer"),
                 })
 
     doc.close()
