@@ -55,7 +55,7 @@ document.addEventListener("click", e => {
 /* 좌우 화살표 페이지 이동 */
 document.addEventListener("keydown", e => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-  if (!State.pdfDoc) return;
+  if (!State.currentChapter) return;
   if (e.key === "ArrowRight") { e.preventDefault(); SFX.play("flip"); showSpread(State.currentLeftPage + 2); }
   if (e.key === "ArrowLeft")  { e.preventDefault(); SFX.play("flip"); showSpread(State.currentLeftPage - 2); }
 });
@@ -422,32 +422,26 @@ function setupStudyControls() {
   });
 }
 
-/* ===== 스캔 뷰어 (PDF.js 2-페이지 스프레드 + 캐시) ===== */
+/* ===== 스캔 뷰어 (서버 이미지 기반 + 브라우저 캐시) ===== */
+// Server renders each page as WebP at 2.5× PDF points. Browser caches indefinitely.
+const SERVER_PAGE_SCALE = 2.5;
+
 async function loadChapterScan(ch) {
   document.getElementById("scan-ann-overlay").innerHTML = "";
-  // Don't clear pageCache — keep renders across chapters for instant navigation
   State.panX = 0; State.panY = 0; State.zoomLevel = 1.0;
   applyTransform();
 
-  try {
-    if (!State.pdfDoc) {
-      document.getElementById("scan-loading").classList.remove("hidden");
-      State.pdfDoc = await pdfjsLib.getDocument("/pdf").promise;
-      State.pdfTotalPages = State.pdfDoc.numPages;
-      State.currentScale = null;
-    }
-    // Use concept-only page range (excludes 핵심문제 pages)
-    State.chapterStartPage = ch.conceptStartPage || ch.startPage || 1;
-    State.chapterEndPage   = ch.conceptEndPage   || ch.endPage   || State.pdfTotalPages;
+  // Use concept-only page range (excludes 핵심문제 pages)
+  State.chapterStartPage = ch.conceptStartPage || ch.startPage || 1;
+  State.chapterEndPage   = ch.conceptEndPage   || ch.endPage   || 999;
 
+  try {
     await showSpread(State.chapterStartPage);
     State.annPanelChapter = null;
     renderAnnotationList(null);
-    // Preload all remaining chapter pages in background for instant navigation
     preRenderChapter(State.chapterStartPage, State.chapterEndPage);
   } catch (err) {
-    console.error("PDF 로드 오류:", err);
-    document.getElementById("scan-page-info").textContent = "PDF 오류";
+    console.error("뷰어 오류:", err);
   } finally {
     document.getElementById("scan-loading").classList.add("hidden");
   }
@@ -460,39 +454,39 @@ async function showSpread(leftPageNum) {
   const rightPageNum = leftPageNum + 1;
   const lCanvas = document.getElementById("scan-page-left");
   const rCanvas = document.getElementById("scan-page-right");
+  const rightExists = rightPageNum <= State.chapterEndPage;
 
-  // ── 캐시 히트 시 즉시 표시 (로딩 없음) ──
+  // ── 캐시 히트 시 즉시 표시 ──
   const lCached = State.pageCache.get(leftPageNum);
   const rCached = State.pageCache.get(rightPageNum);
-  const rightExists = rightPageNum <= State.chapterEndPage;
 
   if (lCached) blitCache(lCached, lCanvas, "hl-canvas-left");
   if (rCached && rightExists) blitCache(rCached, rCanvas, "hl-canvas-right");
   else if (!rightExists && lCached) renderBlankCanvas(rCanvas, lCanvas);
 
   if (lCached && (rCached || !rightExists)) {
-    // 둘 다 캐시 → 즉시 완료
     finishSpreadUI(leftPageNum);
     preRenderNeighbors(leftPageNum);
     return;
   }
 
-  // ── 캐시 미스: 렌더 후 캐시 ──
+  // ── 캐시 미스: 서버에서 이미지 fetch ──
   document.getElementById("scan-loading").classList.remove("hidden");
   try {
-    // 스케일은 챕터 첫 렌더에서만 계산
-    if (!State.currentScale) {
-      State.currentScale = await calcScale(leftPageNum);
-    }
-    const scale = State.currentScale;
-
     const tasks = [];
-    if (!lCached) tasks.push(renderAndCache(leftPageNum,  lCanvas, scale, "hl-canvas-left"));
-    if (!rCached && rightExists)
-      tasks.push(renderAndCache(rightPageNum, rCanvas, scale, "hl-canvas-right"));
+    if (!lCached) tasks.push(preRenderOne(leftPageNum));
+    if (!rCached && rightExists) tasks.push(preRenderOne(rightPageNum));
     else if (!rightExists) renderBlankCanvas(rCanvas, lCanvas);
     await Promise.all(tasks);
-    // 텍스트 레이어 백그라운드 로드
+
+    const lNew = State.pageCache.get(leftPageNum);
+    const rNew = State.pageCache.get(rightPageNum);
+    if (lNew) blitCache(lNew, lCanvas, "hl-canvas-left");
+    if (rNew && rightExists) blitCache(rNew, rCanvas, "hl-canvas-right");
+    else if (!rightExists && lNew) renderBlankCanvas(rCanvas, lCanvas);
+
+    // 텍스트 레이어 백그라운드 로드 (AI·형광펜 스냅용, PDF.js 지연 로딩)
+    const scale = State.currentScale || 1;
     loadPageText(leftPageNum, scale);
     if (rightExists) loadPageText(rightPageNum, scale);
   } finally {
@@ -514,17 +508,9 @@ function finishSpreadUI(leftPageNum) {
 }
 
 async function renderAndCache(pageNum, canvasEl, displayScale, hlId) {
-  const page    = await State.pdfDoc.getPage(pageNum);
-  const renderVp  = page.getViewport({ scale: RENDER_SCALE });
-  const displayVp = page.getViewport({ scale: displayScale });
-  const off = document.createElement("canvas");
-  off.width  = Math.round(renderVp.width);
-  off.height = Math.round(renderVp.height);
-  off._cssWidth  = displayVp.width;
-  off._cssHeight = displayVp.height;
-  await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
-  State.pageCache.set(pageNum, off);
-  blitCache(off, canvasEl, hlId);
+  await preRenderOne(pageNum);
+  const cached = State.pageCache.get(pageNum);
+  if (cached) blitCache(cached, canvasEl, hlId);
 }
 
 function blitCache(offscreen, canvasEl, hlId) {
@@ -549,68 +535,67 @@ function blitCache(offscreen, canvasEl, hlId) {
 }
 
 async function preRenderNeighbors(leftPageNum) {
-  // Still render immediate neighbors first for responsiveness
-  const displayScale = State.currentScale;
-  if (!displayScale) return;
   const immediate = [leftPageNum + 2, leftPageNum + 3, leftPageNum - 2, leftPageNum - 1];
-  await Promise.all(immediate.map(p => preRenderOne(p, displayScale)));
+  await Promise.all(immediate.map(p => preRenderOne(p)));
 }
 
-async function preRenderOne(p, displayScale) {
-  if (p < State.chapterStartPage || p > State.chapterEndPage) return;
+// Fetch page image from server and cache as offscreen canvas.
+// Server renders at SERVER_PAGE_SCALE× PDF points → stored at full resolution,
+// displayed at CSS size computed to fit the viewer.
+async function preRenderOne(p) {
   if (State.pageCache.has(p)) return;
-  try {
-    const page     = await State.pdfDoc.getPage(p);
-    const renderVp = page.getViewport({ scale: RENDER_SCALE });
-    const dispVp   = page.getViewport({ scale: displayScale });
-    const off = document.createElement("canvas");
-    off.width = Math.round(renderVp.width); off.height = Math.round(renderVp.height);
-    off._cssWidth = dispVp.width; off._cssHeight = dispVp.height;
-    await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
-    State.pageCache.set(p, off);
-    loadPageText(p, displayScale);
-  } catch (_) {}
+  if (p < 1) return;
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      if (!State.currentScale) {
+        // Compute display scale to fit the viewer (PDF pts → CSS px)
+        const wrap = document.getElementById("scan-wrap");
+        const availH = Math.max(300, wrap.clientHeight - 16);
+        const availW = Math.max(200, (wrap.clientWidth - 40) / 2);
+        const pdfW = img.naturalWidth  / SERVER_PAGE_SCALE;
+        const pdfH = img.naturalHeight / SERVER_PAGE_SCALE;
+        State.currentScale = Math.min(availH / pdfH, availW * 1.8 / pdfW);
+      }
+      const cssW = (img.naturalWidth  / SERVER_PAGE_SCALE) * State.currentScale;
+      const cssH = (img.naturalHeight / SERVER_PAGE_SCALE) * State.currentScale;
+      const off = document.createElement("canvas");
+      off.width = img.naturalWidth; off.height = img.naturalHeight;
+      off._cssWidth = cssW; off._cssHeight = cssH;
+      off.getContext("2d").drawImage(img, 0, 0);
+      State.pageCache.set(p, off);
+      resolve();
+    };
+    img.onerror = () => resolve();
+    img.src = `/api/page-image/${p}`;
+  });
 }
 
 async function preRenderChapter(startPage, endPage) {
-  // Wait for scale to be available
-  let scale = State.currentScale;
-  if (!scale) {
-    for (let i = 0; i < 20; i++) {
-      await new Promise(r => setTimeout(r, 100));
-      if (State.currentScale) { scale = State.currentScale; break; }
-    }
-    if (!scale) return;
-  }
-  // Render all chapter pages in parallel batches of 4
   const pages = [];
   for (let p = startPage; p <= endPage; p++) {
     if (!State.pageCache.has(p)) pages.push(p);
   }
   const BATCH = 4;
   for (let i = 0; i < pages.length; i += BATCH) {
-    const batch = pages.slice(i, i + BATCH);
-    await Promise.all(batch.map(p => preRenderOne(p, scale)));
+    await Promise.all(pages.slice(i, i + BATCH).map(p => preRenderOne(p)));
   }
 }
 
+/* calcScale: kept for AI-drag feature; uses pdfDoc lazily */
 async function calcScale(pageNum) {
-  const page = await State.pdfDoc.getPage(pageNum);
-  const vp   = page.getViewport({ scale: 1 });
-  const wrap = document.getElementById("scan-wrap");
-  // Height-based scaling: fill as much vertical space as possible
-  const availH = Math.max(300, wrap.clientHeight - 16);
-  const scaleH = availH / vp.height;
-  // Width guard: allow horizontal scroll but don't exceed 2× the width-fit scale
-  const availW = Math.max(200, (wrap.clientWidth - 40) / 2);
-  const scaleW = availW / vp.width;
-  return Math.min(scaleH, scaleW * 1.8);
+  return State.currentScale || 1;
 }
 
-/* 텍스트 레이어 캐시 (스냅 용도) — 좌표는 CSS(display) 픽셀 기준 */
+/* 텍스트 레이어 캐시 (AI 질문·형광펜 스냅용) — PDF.js 지연 로딩 */
 async function loadPageText(pageNum, displayScale) {
   if (State.textCache.has(pageNum)) return;
   try {
+    // Lazy-init PDF.js — only needed for text extraction, not for rendering
+    if (!State.pdfDoc) {
+      State.pdfDoc = await pdfjsLib.getDocument("/pdf").promise;
+      State.pdfTotalPages = State.pdfDoc.numPages;
+    }
     const page = await State.pdfDoc.getPage(pageNum);
     const vp   = page.getViewport({ scale: displayScale });
     const tc   = await page.getTextContent();
@@ -1002,7 +987,7 @@ function setupResizePanels() {
 function setupZoom() {
   const wrap = document.getElementById("scan-wrap");
   wrap.addEventListener("wheel", e => {
-    if (!State.pdfDoc) return;
+    if (!State.currentChapter) return;
     e.preventDefault();
     const factor = Math.pow(1.06, -e.deltaY / 100);
     const newZoom = Math.max(0.3, Math.min(5.0, State.zoomLevel * factor));

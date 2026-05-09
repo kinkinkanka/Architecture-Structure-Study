@@ -155,11 +155,13 @@ def index():
 @app.route("/pdf")
 def serve_pdf():
     if PDF_PATH.exists():
-        return send_from_directory(
+        resp = send_from_directory(
             str(PDF_PATH.parent),
             PDF_PATH.name,
             mimetype="application/pdf"
         )
+        resp.headers["Cache-Control"] = "public, max-age=86400"
+        return resp
     return jsonify({"error": "PDF not found"}), 404
 
 
@@ -244,7 +246,7 @@ def get_problem_pages():
 
 @app.route("/api/page-image/<int:page_num>")
 def get_page_image(page_num):
-    """PDF 페이지를 PNG 이미지로 반환 (1-indexed)"""
+    """PDF 페이지를 WebP 이미지로 반환 (1-indexed). 브라우저가 7일간 캐시."""
     doc = get_pdf_doc()
     if not doc:
         return jsonify({"error": "PDF not found"}), 404
@@ -252,10 +254,10 @@ def get_page_image(page_num):
         if page_num < 1 or page_num > doc.page_count:
             return jsonify({"error": "page out of range"}), 400
         page = doc[page_num - 1]
-        pix  = page.get_pixmap(matrix=pymupdf.Matrix(1.8, 1.8))
-        img_bytes = pix.tobytes("png")
-        resp = send_file(io.BytesIO(img_bytes), mimetype="image/png")
-        resp.headers["Cache-Control"] = "public, max-age=3600"
+        pix  = page.get_pixmap(matrix=pymupdf.Matrix(2.5, 2.5))
+        img_bytes = pix.tobytes("webp", quality=88)
+        resp = send_file(io.BytesIO(img_bytes), mimetype="image/webp")
+        resp.headers["Cache-Control"] = "public, max-age=604800, immutable"
         return resp
     except Exception as e:
         return jsonify({"error": str(e)}), 500
