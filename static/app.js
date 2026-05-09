@@ -1038,6 +1038,21 @@ function renderMarkdown(text) {
   catch (_) { return escHtml(String(text)).replace(/\n/g, "<br>"); }
 }
 
+// Convert non-standard math delimiters to $...$ so KaTeX can render them
+function normalizeLatex(text) {
+  if (!text) return text;
+  // \[...\] → $$...$$
+  text = text.replace(/\\\[([^]*?)\\\]/g, (_, m) => `$$${m}$$`);
+  // \(...\) → $...$
+  text = text.replace(/\\\(([^]*?)\\\)/g, (_, m) => `$${m}$`);
+  // [ LaTeX ] → $$...$$ when content contains LaTeX-like chars
+  text = text.replace(/\[\s*([^\[\]]{3,}?)\s*\]/g, (match, inner) => {
+    if (/[\\^_{}]/.test(inner)) return `$$${inner}$$`;
+    return match;
+  });
+  return text;
+}
+
 /* ===== 형광펜 ===== */
 function setupHighlighter() {
   document.getElementById("btn-tool-select").addEventListener("click", () => setToolMode("select"));
@@ -1688,10 +1703,15 @@ async function quizToggleExplain() {
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    text.innerHTML = renderMarkdown(data.explanation);
+    text.innerHTML = renderMarkdown(normalizeLatex(data.explanation));
     if (window.renderMathInElement) {
       renderMathInElement(text, {
-        delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}],
+        delimiters: [
+          {left:"$$", right:"$$", display:true},
+          {left:"\\[", right:"\\]", display:true},
+          {left:"$",  right:"$",  display:false},
+          {left:"\\(", right:"\\)", display:false},
+        ],
         throwOnError: false,
       });
     }

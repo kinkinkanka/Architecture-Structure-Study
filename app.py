@@ -83,6 +83,15 @@ def init_db():
             last_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (user_id, problem_id)
         )""")
+        conn.execute("""CREATE TABLE IF NOT EXISTS migrations (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )""")
+        # v2: clear old explanations that used [ ] math delimiters
+        v = conn.execute("SELECT value FROM migrations WHERE key='explain_fmt'").fetchone()
+        if not v or v["value"] != "2":
+            conn.execute("DELETE FROM explanations")
+            conn.execute("INSERT OR REPLACE INTO migrations (key, value) VALUES ('explain_fmt', '2')")
 
 init_db()
 
@@ -316,13 +325,16 @@ def quiz_explain():
 
     labels = {1:"①", 2:"②", 3:"③", 4:"④"}
     answer_label = labels.get(answer, "?")
+    math_rule = (
+        "수식 규칙: 인라인 수식은 $수식$ 형태로, 별도 줄 수식은 $$수식$$ 형태로 작성하세요. "
+        "대괄호 [ ] 나 \\[ \\] 는 수식 구분자로 절대 사용하지 마세요."
+    )
     prompt = (
         f"건축기사 구조 시험 문제입니다. 정답은 {answer_label}번입니다. "
-        "왜 이것이 정답인지 단계별로 간결하게 설명해주세요. "
-        "수식은 LaTeX($...$)로 표현하고 한국어로 답하세요."
+        f"왜 이것이 정답인지 단계별로 간결하게 설명해주세요. {math_rule} 한국어로 답하세요."
     ) if answer else (
-        "건축기사 구조 시험 문제입니다. 이 문제를 분석하고 풀이과정을 설명해주세요. "
-        "수식은 LaTeX($...$)로 표현하고 한국어로 답하세요."
+        f"건축기사 구조 시험 문제입니다. 이 문제를 분석하고 풀이과정을 설명해주세요. "
+        f"{math_rule} 한국어로 답하세요."
     )
 
     try:
