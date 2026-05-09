@@ -425,20 +425,20 @@ function setupStudyControls() {
 /* ===== 스캔 뷰어 (PDF.js 2-페이지 스프레드 + 캐시) ===== */
 async function loadChapterScan(ch) {
   document.getElementById("scan-ann-overlay").innerHTML = "";
-  document.getElementById("scan-loading").classList.remove("hidden");
-  State.pageCache.clear();
-  State.textCache.clear();
-  State.currentScale = null;
+  // Don't clear pageCache — keep renders across chapters for instant navigation
   State.panX = 0; State.panY = 0; State.zoomLevel = 1.0;
   applyTransform();
 
   try {
     if (!State.pdfDoc) {
+      document.getElementById("scan-loading").classList.remove("hidden");
       State.pdfDoc = await pdfjsLib.getDocument("/pdf").promise;
       State.pdfTotalPages = State.pdfDoc.numPages;
+      State.currentScale = null;
     }
-    State.chapterStartPage = ch.startPage || 1;
-    State.chapterEndPage   = ch.endPage   || State.pdfTotalPages;
+    // Use concept-only page range (excludes 핵심문제 pages)
+    State.chapterStartPage = ch.conceptStartPage || ch.startPage || 1;
+    State.chapterEndPage   = ch.conceptEndPage   || ch.endPage   || State.pdfTotalPages;
 
     await showSpread(State.chapterStartPage);
     State.annPanelChapter = null;
