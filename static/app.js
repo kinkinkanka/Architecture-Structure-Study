@@ -443,6 +443,8 @@ async function loadChapterScan(ch) {
     await showSpread(State.chapterStartPage);
     State.annPanelChapter = null;
     renderAnnotationList(null);
+    // Preload all remaining chapter pages in background for instant navigation
+    preRenderChapter(State.chapterStartPage, State.chapterEndPage);
   } catch (err) {
     console.error("PDF 로드 오류:", err);
     document.getElementById("scan-page-info").textContent = "PDF 오류";
@@ -547,25 +549,48 @@ function blitCache(offscreen, canvasEl, hlId) {
 }
 
 async function preRenderNeighbors(leftPageNum) {
+  // Still render immediate neighbors first for responsiveness
   const displayScale = State.currentScale;
   if (!displayScale) return;
-  const candidates = [leftPageNum + 2, leftPageNum + 3, leftPageNum - 2, leftPageNum - 1];
-  for (const p of candidates) {
-    if (p < State.chapterStartPage || p > State.chapterEndPage) continue;
-    if (State.pageCache.has(p)) continue;
-    try {
-      const page      = await State.pdfDoc.getPage(p);
-      const renderVp  = page.getViewport({ scale: RENDER_SCALE });
-      const displayVp = page.getViewport({ scale: displayScale });
-      const off = document.createElement("canvas");
-      off.width  = Math.round(renderVp.width);
-      off.height = Math.round(renderVp.height);
-      off._cssWidth  = displayVp.width;
-      off._cssHeight = displayVp.height;
-      await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
-      State.pageCache.set(p, off);
-      loadPageText(p, displayScale);
-    } catch (_) {}
+  const immediate = [leftPageNum + 2, leftPageNum + 3, leftPageNum - 2, leftPageNum - 1];
+  await Promise.all(immediate.map(p => preRenderOne(p, displayScale)));
+}
+
+async function preRenderOne(p, displayScale) {
+  if (p < State.chapterStartPage || p > State.chapterEndPage) return;
+  if (State.pageCache.has(p)) return;
+  try {
+    const page     = await State.pdfDoc.getPage(p);
+    const renderVp = page.getViewport({ scale: RENDER_SCALE });
+    const dispVp   = page.getViewport({ scale: displayScale });
+    const off = document.createElement("canvas");
+    off.width = Math.round(renderVp.width); off.height = Math.round(renderVp.height);
+    off._cssWidth = dispVp.width; off._cssHeight = dispVp.height;
+    await page.render({ canvasContext: off.getContext("2d"), viewport: renderVp }).promise;
+    State.pageCache.set(p, off);
+    loadPageText(p, displayScale);
+  } catch (_) {}
+}
+
+async function preRenderChapter(startPage, endPage) {
+  // Wait for scale to be available
+  let scale = State.currentScale;
+  if (!scale) {
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      if (State.currentScale) { scale = State.currentScale; break; }
+    }
+    if (!scale) return;
+  }
+  // Render all chapter pages in parallel batches of 4
+  const pages = [];
+  for (let p = startPage; p <= endPage; p++) {
+    if (!State.pageCache.has(p)) pages.push(p);
+  }
+  const BATCH = 4;
+  for (let i = 0; i < pages.length; i += BATCH) {
+    const batch = pages.slice(i, i + BATCH);
+    await Promise.all(batch.map(p => preRenderOne(p, scale)));
   }
 }
 
