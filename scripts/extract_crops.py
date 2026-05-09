@@ -38,7 +38,9 @@ CHAPTER_META = {
 }
 
 # 해설 블록 패턴 - OCR 변형 포함
-HAESUL_PAT = re.compile(r"[해하][절젤설]")
+HAESUL_PAT  = re.compile(r"[해하][절젤설]")
+# 4번 선택지 패턴 (크롭 하단 경계용) - 줄 시작에만 매칭해 수식 내 (4) 오탐 방지
+CHOICE4_PAT = re.compile(r"(?m)^[ \t]*(?:[④⑷]|[\(\（]4[\)\）])")
 
 ANSWER_NUM_PAT = re.compile(r"(\d+)\.")
 
@@ -71,7 +73,7 @@ def parse_answer_line(blocks, ph):
 def match_num_validated(text, expected_nums):
     """
     expected_nums가 주어졌을 때 넓은 패턴으로 문제 번호 탐지.
-    OCR 변형 포함: "2 그림", "1-", "Z " → 7, "『." → 1
+    OCR 변형 포함: "2 그림", "1-", "Z " → 7, "『." → 1, "）." → 6
     """
     t = text.strip()
     # 표준 마침표: "7. "
@@ -98,6 +100,9 @@ def match_num_validated(text, expected_nums):
     # OCR: "『." or "「." → 1
     if 1 in expected_nums and re.match(r"^[『「1l][\.－\-]\s", t):
         return 1
+    # OCR: "）." → 6 (6이 닫는괄호로 OCR됨)
+    if 6 in expected_nums and re.match(r"^[）\)][\.．]\s", t):
+        return 6
     return None
 
 
@@ -132,20 +137,33 @@ def match_num_fallback(text):
     return None
 
 
-def first_haesul_y(body, y_start, y_end, cx0, cx1):
-    """컬럼·y 범위에서 첫 해설 블록의 y0. 없으면 y_end."""
-    PAD_X = 50
+def find_crop_bottom(body, y_start, y_end, cx0, cx1):
+    """
+    문제 하단 경계 탐색 (우선순위):
+    1. ④/⑷/(4) 마지막 등장 y1 + 여백
+    2. 없으면 해설 블록 y0
+    3. 둘 다 없으면 y_end
+    내측 경계는 strict하게 유지해 반대 컬럼 블록 혼입 방지.
+    """
+    OUTER_PAD = 30
+    last_choice4_y1 = None
+    haesul_y = y_end
     for b in sorted(body, key=lambda x: x[1]):
-        x0, y0, _, _, text = b[:5]
-        if not (cx0 - PAD_X <= x0 <= cx1 + PAD_X):
+        x0, y0, x1, y1, text = b[:5]
+        if not (cx0 - OUTER_PAD <= x0 < cx1):
             continue
         if y0 <= y_start + 8:
             continue
         if y0 >= y_end:
             break
-        if HAESUL_PAT.search(text.strip()):
-            return y0
-    return y_end
+        if CHOICE4_PAT.search(text):
+            last_choice4_y1 = y1
+        if haesul_y == y_end and HAESUL_PAT.search(text.strip()):
+            haesul_y = y0
+
+    if last_choice4_y1 is not None:
+        return min(last_choice4_y1 + 14, haesul_y)
+    return haesul_y
 
 
 def get_starts_in_col(body, col_x0, col_x1, expected_nums):
@@ -165,6 +183,42 @@ def get_starts_in_col(body, col_x0, col_x1, expected_nums):
         if n is not None and n not in found:
             found[n] = y0
     return sorted(found.items(), key=lambda kv: kv[1])  # [(num, y0), ...]
+
+
+def split_cols_by_position(body, expected_nums, half):
+    """
+    실제 블록 x 위치 기반으로 expected_nums를 left/right 컬럼에 할당.
+    단순 절반 분할(mid_idx) 대신 실제로 발견된 위치를 사용한다.
+    발견되지 않은 번호는 연속된 인접 번호의 컬럼을 따른다.
+    """
+    found_col = {}  # num -> 'left' or 'right'
+    for b in body:
+        col = 'left' if b[0] < half else 'right'
+        n = match_num_validated(b[4], expected_nums)
+        if n is not None and n not in found_col:
+            found_col[n] = col
+
+    left_nums  = {n for n, c in found_col.items() if c == 'left'}
+    right_nums = {n for n, c in found_col.items() if c == 'right'}
+    unassigned = expected_nums - left_nums - right_nums
+
+    for miss in sorted(unassigned):
+        left_near  = [n for n in left_nums  if abs(n - miss) <= 5]
+        right_near = [n for n in right_nums if abs(n - miss) <= 5]
+
+        if left_near and not right_near:
+            left_nums.add(miss)
+        elif right_near and not left_near:
+            right_nums.add(miss)
+        elif left_near and right_near:
+            d_left  = min(abs(n - miss) for n in left_near)
+            d_right = min(abs(n - miss) for n in right_near)
+            (left_nums if d_left <= d_right else right_nums).add(miss)
+        else:
+            # 인접 없음 - 균형 맞추기
+            (left_nums if len(left_nums) <= len(right_nums) else right_nums).add(miss)
+
+    return left_nums, right_nums
 
 
 def fill_missing_by_interp(starts, expected_in_col, answer_y):
@@ -201,9 +255,9 @@ def make_crops(starts, cx0, cx1, pw, body, answer_y, ph):
     crops = []
     for i, (num, sy0) in enumerate(starts):
         next_y = starts[i + 1][1] if i + 1 < len(starts) else answer_y
-        haesul_y = first_haesul_y(body, sy0, next_y, cx0, cx1)
+        bottom_y = find_crop_bottom(body, sy0, next_y, cx0, cx1)
         by0 = max(0, sy0 - PAD)
-        by1 = min(ph, haesul_y)
+        by1 = min(ph, bottom_y)
         bx0 = round(max(0,  cx0 - PAD))
         bx1 = round(min(pw, cx1 + PAD))
         if by1 - by0 < MIN_H or bx1 - bx0 < MIN_W:
@@ -243,7 +297,6 @@ def extract_page_crops(doc, page_1idx):
     half = pw / 2
 
     # ── 레이아웃 판별 ───────────────────────────────────────
-    # expected_nums가 있으면 validated, 없으면 fallback 기준으로 후보 수집
     def _find_candidates(exp):
         return [b for b in body
                 if (match_num_validated(b[4], exp) if exp
@@ -256,10 +309,8 @@ def extract_page_crops(doc, page_1idx):
 
     if two_col:
         if expected_nums:
-            sorted_exp = sorted(expected_nums)
-            mid_idx   = len(sorted_exp) // 2
-            left_exp  = set(sorted_exp[:mid_idx])
-            right_exp = set(sorted_exp[mid_idx:])
+            # 실제 블록 위치로 컬럼 할당 (절반 분할 대신)
+            left_exp, right_exp = split_cols_by_position(body, expected_nums, half)
         else:
             left_exp = right_exp = set()  # fallback: no split
 
