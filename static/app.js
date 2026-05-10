@@ -540,17 +540,18 @@ async function preRenderNeighbors(leftPageNum) {
   await Promise.all(immediate.map(p => preRenderOne(p)));
 }
 
-// Fetch page image from server and cache as offscreen canvas.
-// Server renders at SERVER_PAGE_SCALE× PDF points → stored at full resolution,
-// displayed at CSS size computed to fit the viewer.
+// In-flight deduplication: same page requested by multiple callers shares one HTTP request.
+const _fetchCache = new Map();  // pageNum → Promise (while in flight)
+
 async function preRenderOne(p) {
   if (State.pageCache.has(p)) return;
   if (p < 1) return;
-  return new Promise((resolve) => {
+  if (_fetchCache.has(p)) return _fetchCache.get(p);  // join existing request
+
+  const promise = new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
       if (!State.currentScale) {
-        // Compute display scale to fit the viewer (PDF pts → CSS px)
         const wrap = document.getElementById("scan-wrap");
         const availH = Math.max(300, wrap.clientHeight - 16);
         const availW = Math.max(200, (wrap.clientWidth - 40) / 2);
@@ -565,22 +566,29 @@ async function preRenderOne(p) {
       off._cssWidth = cssW; off._cssHeight = cssH;
       off.getContext("2d").drawImage(img, 0, 0);
       State.pageCache.set(p, off);
+      _fetchCache.delete(p);
       resolve();
     };
-    img.onerror = () => { console.warn(`페이지 이미지 로드 실패: page_${p}.webp`); resolve(); };
+    img.onerror = () => {
+      console.warn(`페이지 이미지 로드 실패: page_${p}.webp`);
+      _fetchCache.delete(p);
+      resolve();
+    };
     img.src = `/static/pages/page_${p}.webp`;
   });
+
+  _fetchCache.set(p, promise);
+  return promise;
 }
 
 async function preRenderChapter(startPage, endPage) {
   const pages = [];
   for (let p = startPage; p <= endPage; p++) {
-    if (!State.pageCache.has(p)) pages.push(p);
+    if (!State.pageCache.has(p) && !_fetchCache.has(p)) pages.push(p);
   }
-  const BATCH = 4;
-  for (let i = 0; i < pages.length; i += BATCH) {
-    await Promise.all(pages.slice(i, i + BATCH).map(p => preRenderOne(p)));
-  }
+  // Load all chapter pages in parallel — deduplication prevents double-fetches.
+  // Browser limits connections to ~6 per host, so this is safe even for large chapters.
+  await Promise.all(pages.map(p => preRenderOne(p)));
 }
 
 /* calcScale: kept for AI-drag feature; uses pdfDoc lazily */
