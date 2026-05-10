@@ -11,8 +11,8 @@ except ImportError:
 
 from PIL import Image
 
-SCALE = 1.5
-QUALITY = 80
+SCALE = 2.5
+QUALITY = 85
 PDF_PATH = Path(__file__).parent.parent / "건축기사 구조_ocr.pdf"
 OUT_DIR = Path(__file__).parent.parent / "static" / "pages"
 
