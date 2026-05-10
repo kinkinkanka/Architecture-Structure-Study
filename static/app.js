@@ -424,7 +424,7 @@ function setupStudyControls() {
 
 /* ===== 스캔 뷰어 (서버 이미지 기반 + 브라우저 캐시) ===== */
 // Server renders each page as WebP at 2.5× PDF points. Browser caches indefinitely.
-const SERVER_PAGE_SCALE = 2.5;
+const SERVER_PAGE_SCALE = 1.5;
 
 async function loadChapterScan(ch) {
   document.getElementById("scan-ann-overlay").innerHTML = "";
@@ -567,7 +567,7 @@ async function preRenderOne(p) {
       resolve();
     };
     img.onerror = () => resolve();
-    img.src = `/api/page-image/${p}`;
+    img.src = `/static/pages/page_${p}.webp`;
   });
 }
 

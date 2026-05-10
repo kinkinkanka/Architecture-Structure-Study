@@ -246,17 +246,30 @@ def get_problem_pages():
 
 @app.route("/api/page-image/<int:page_num>")
 def get_page_image(page_num):
-    """PDF 페이지를 WebP 이미지로 반환 (1-indexed). 브라우저가 7일간 캐시."""
+    """PDF 페이지 WebP 반환 — pre-generated 파일 우선, 없으면 실시간 렌더."""
+    pages_dir = BASE_DIR / "static" / "pages"
+    static_file = pages_dir / f"page_{page_num}.webp"
+    if static_file.exists():
+        resp = send_from_directory(str(pages_dir), f"page_{page_num}.webp",
+                                   mimetype="image/webp")
+        resp.headers["Cache-Control"] = "public, max-age=604800, immutable"
+        return resp
+
+    # Fallback: render on-the-fly
     doc = get_pdf_doc()
     if not doc:
         return jsonify({"error": "PDF not found"}), 404
     try:
         if page_num < 1 or page_num > doc.page_count:
             return jsonify({"error": "page out of range"}), 400
+        from PIL import Image
         page = doc[page_num - 1]
-        pix  = page.get_pixmap(matrix=pymupdf.Matrix(2.5, 2.5))
-        img_bytes = pix.tobytes("webp", quality=88)
-        resp = send_file(io.BytesIO(img_bytes), mimetype="image/webp")
+        pix  = page.get_pixmap(matrix=pymupdf.Matrix(1.5, 1.5))
+        img  = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        buf  = io.BytesIO()
+        img.save(buf, format="WEBP", quality=80)
+        buf.seek(0)
+        resp = send_file(buf, mimetype="image/webp")
         resp.headers["Cache-Control"] = "public, max-age=604800, immutable"
         return resp
     except Exception as e:
