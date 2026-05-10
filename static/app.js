@@ -1279,12 +1279,14 @@ function hlEraseIntersecting(chId, side, eraserPts) {
 }
 
 // 좌표는 CSS(display) 픽셀 기준 — RENDER_SCALE과 무관하게 일관성 유지
+// getBoundingClientRect()는 zoom 적용된 뷰포트 크기를 반환하므로 zoomLevel로 나눠 CSS 좌표로 환산
 function hlGetCanvasCoords(clientX, clientY) {
+  const z = State.zoomLevel || 1;
   for (const side of ["left","right"]) {
     const c = document.getElementById(side === "left" ? "scan-page-left" : "scan-page-right");
     const r = c.getBoundingClientRect();
     if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) {
-      return { side, x: clientX - r.left, y: clientY - r.top }; // CSS 공간
+      return { side, x: (clientX - r.left) / z, y: (clientY - r.top) / z };
     }
   }
   return null;
