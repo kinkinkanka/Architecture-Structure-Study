@@ -548,9 +548,11 @@ async function preRenderOne(p) {
   if (p < 1) return;
   if (_fetchCache.has(p)) return _fetchCache.get(p);  // join existing request
 
-  const promise = new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
+  const promise = (async () => {
+    try {
+      const img = new Image();
+      img.src = `/static/pages/page_${p}.webp`;
+      await img.decode();   // async decode — won't block main thread on drawImage
       if (!State.currentScale) {
         const wrap = document.getElementById("scan-wrap");
         const availH = Math.max(300, wrap.clientHeight - 16);
@@ -566,16 +568,12 @@ async function preRenderOne(p) {
       off._cssWidth = cssW; off._cssHeight = cssH;
       off.getContext("2d").drawImage(img, 0, 0);
       State.pageCache.set(p, off);
+    } catch (e) {
+      console.warn(`페이지 이미지 로드 실패: page_${p}.webp`, e);
+    } finally {
       _fetchCache.delete(p);
-      resolve();
-    };
-    img.onerror = () => {
-      console.warn(`페이지 이미지 로드 실패: page_${p}.webp`);
-      _fetchCache.delete(p);
-      resolve();
-    };
-    img.src = `/static/pages/page_${p}.webp`;
-  });
+    }
+  })();
 
   _fetchCache.set(p, promise);
   return promise;
@@ -1994,4 +1992,9 @@ function shuffle(arr) {
     [arr[i],arr[j]] = [arr[j],arr[i]];
   }
   return arr;
+}
+
+// Service Worker — page images cached persistently in browser
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
 }

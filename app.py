@@ -153,6 +153,14 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/sw.js")
+def service_worker():
+    resp = send_from_directory(str(BASE_DIR), "sw.js",
+                               mimetype="application/javascript")
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return resp
+
+
 @app.route("/pdf")
 def serve_pdf():
     if PDF_PATH.exists():
