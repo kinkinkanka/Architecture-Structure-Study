@@ -20,6 +20,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 604800  # 7 days for static files
 app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 
 BASE_DIR = Path(__file__).parent

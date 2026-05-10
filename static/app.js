@@ -82,7 +82,7 @@ const State = {
   // 페이지 렌더 캐시
   pageCache: new Map(),   // pageNum → offscreen HTMLCanvasElement
   textCache: new Map(),   // pageNum → [{x,y,w,h}] (canvas coords)
-  currentScale: 1,
+  currentScale: null,
   // 주석
   annotations: JSON.parse(localStorage.getItem("scan_annotations") || "{}"),
   annPanelChapter: null,
@@ -429,6 +429,7 @@ const SERVER_PAGE_SCALE = 1.5;
 async function loadChapterScan(ch) {
   document.getElementById("scan-ann-overlay").innerHTML = "";
   State.panX = 0; State.panY = 0; State.zoomLevel = 1.0;
+  State.currentScale = null;  // recompute from viewer size on first render
   applyTransform();
 
   // Use concept-only page range (excludes 핵심문제 pages)
@@ -566,7 +567,7 @@ async function preRenderOne(p) {
       State.pageCache.set(p, off);
       resolve();
     };
-    img.onerror = () => resolve();
+    img.onerror = () => { console.warn(`페이지 이미지 로드 실패: page_${p}.webp`); resolve(); };
     img.src = `/static/pages/page_${p}.webp`;
   });
 }
