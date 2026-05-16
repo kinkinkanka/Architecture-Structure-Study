@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>건축구조 학습</title>
-  <link rel="stylesheet" href="/static/style.css?v=4">
+  <link rel="stylesheet" href="/static/style.css?v=5">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
@@ -134,7 +134,7 @@
             <div class="hl-toolbar" id="hl-toolbar">
               <div class="hl-tool-group">
                 <button class="hl-tool-btn active" id="btn-tool-select" title="선택/AI질문 모드">🖱 선택</button>
-                <button class="hl-tool-btn" id="btn-tool-hl" title="형광펜 모드">🖊 형광펜</button>
+                <button class="hl-tool-btn" id="btn-tool-hl" title="사각형 메모 모드">⬜ 사각형</button>
                 <button class="hl-tool-btn" id="btn-tool-pan" title="페이지 이동 모드">✋ 이동</button>
               </div>
               <div class="hl-colors hidden" id="hl-colors">
@@ -158,8 +158,7 @@
                 <button class="hl-flt-btn" data-color="blue">정의</button>
               </div>
               <div class="hl-actions hidden" id="hl-actions">
-                <button class="hl-tool-btn" id="btn-hl-eraser" title="지우개: 드래그하면 형광펜 삭제">⌫ 지우개</button>
-                <button class="hl-tool-btn active" id="btn-hl-snap" title="텍스트 스냅: 텍스트 라인에 맞춰 형광펜 적용">문자 스냅 ON</button>
+                <button class="hl-tool-btn" id="btn-hl-eraser" title="지우개: 클릭으로 사각형 삭제">⌫ 지우개</button>
                 <button class="btn-sm" id="btn-hl-undo">↩ 취소</button>
                 <button class="btn-sm" id="btn-hl-clear">🗑 지우기</button>
               </div>
@@ -177,16 +176,32 @@
           </div>
 
           <div class="resize-handle" id="resize-annpanel"></div>
-          <!-- 오른쪽: AI 질문 기록 패널 -->
+          <!-- 오른쪽: AI 질문 기록 / 사각형 메모 패널 -->
           <div class="scan-ann-panel" id="scan-ann-panel">
             <div class="ann-panel-header">
-              <span>📌 AI 질문 기록</span>
+              <div class="ann-panel-tabs">
+                <button class="ann-panel-tab active" id="btn-annpanel-ai">📌 AI 질문</button>
+                <button class="ann-panel-tab" id="btn-annpanel-rect">⬜ 사각형</button>
+              </div>
               <button class="btn-sm" id="btn-clear-anns" title="이 챕터 기록 삭제">지우기</button>
             </div>
-            <!-- 챕터별 탭 -->
-            <div class="ann-chapter-tabs" id="ann-chapter-tabs"></div>
-            <div id="ann-list" class="ann-list">
-              <p class="ann-empty">페이지를 드래그하면<br>AI 답변이 여기에 저장됩니다</p>
+            <!-- AI 질문 영역 -->
+            <div id="ann-ai-area">
+              <div class="ann-chapter-tabs" id="ann-chapter-tabs"></div>
+              <div id="ann-list" class="ann-list">
+                <p class="ann-empty">페이지를 드래그하면<br>AI 답변이 여기에 저장됩니다</p>
+              </div>
+            </div>
+            <!-- 사각형 메모 영역 -->
+            <div id="rect-panel" class="hidden">
+              <div class="rect-filter-bar">
+                <button class="rect-flt-btn active" data-color="all">전체</button>
+                <button class="rect-flt-btn" data-color="yellow" style="border-color:#FFE600">중요</button>
+                <button class="rect-flt-btn" data-color="green" style="border-color:#00CC44">공식</button>
+                <button class="rect-flt-btn" data-color="pink" style="border-color:#FF5599">암기</button>
+                <button class="rect-flt-btn" data-color="blue" style="border-color:#3399FF">정의</button>
+              </div>
+              <div id="rect-list" class="ann-list"></div>
             </div>
           </div>
 
@@ -377,6 +392,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=4"></script>
+  <script src="/static/app.js?v=5"></script>
 </body>
 </html>

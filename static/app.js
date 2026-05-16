@@ -92,12 +92,12 @@ const State = {
   hlMode: false,
   panMode: false,
   _panStart: null,
-  hlTool: "pen",          // "pen" | "eraser"
+  hlTool: "rect",         // "rect" | "eraser"
   hlColor: "yellow",
-  hlSnap: true,           // 텍스트 스냅 모드
   hlFilter: new Set(["yellow","green","pink","blue"]),
-  _hlLivePath: null,
-  _hlLivePoints: [],      // 현재 드로잉 중인 canvas 좌표 (eraser용도 공유)
+  _rectStart: null,       // { x, y, side } 현재 드로잉 중인 사각형 시작점
+  annPanelTab: "ai",      // "ai" | "rect"
+  rectPanelFilter: "all",
   // 드래그 (AI 질문)
   _drag: null, _pendingCrop: null, _pendingRect: null,
 };
@@ -207,6 +207,7 @@ async function bootApp(username) {
   setupHighlighter();
   setupAnnotationModal();
   setupAnnDetail();
+  setupAnnPanelTabs();
   await setupQuizTab();
   setupChatTab();
   setupGraphTab();
@@ -677,7 +678,7 @@ function setupDragSelect() {
 
   overlay.addEventListener("mousedown", e => {
     if (e.button !== 0) return;
-    if (State.hlMode)  { hlStartStroke(e); return; }
+    if (State.hlMode)  { rectStartDraw(e); return; }
     if (State.panMode) {
       State._panStart = { mx: e.clientX, my: e.clientY, px: State.panX, py: State.panY };
       overlay.style.cursor = "grabbing";
@@ -689,7 +690,7 @@ function setupDragSelect() {
   });
 
   overlay.addEventListener("mousemove", e => {
-    if (State.hlMode)  { hlContinueStroke(e); return; }
+    if (State.hlMode)  { rectContinueDraw(e); return; }
     if (State.panMode && State._panStart) {
       State.panX = State._panStart.px + (e.clientX - State._panStart.mx);
       State.panY = State._panStart.py + (e.clientY - State._panStart.my);
@@ -714,7 +715,7 @@ function setupDragSelect() {
   });
 
   overlay.addEventListener("mouseup", e => {
-    if (State.hlMode) { hlFinishStroke(); return; }
+    if (State.hlMode) { rectFinishDraw(e); return; }
     if (State.panMode) {
       State._panStart = null;
       overlay.style.cursor = "grab";
@@ -744,7 +745,7 @@ function setupDragSelect() {
   });
 
   overlay.addEventListener("mouseleave", () => {
-    if (State.hlMode) hlFinishStroke();
+    if (State.hlMode) { State._rectStart = null; drawHighlightsOnPage(State.currentChapter?.id, State.currentLeftPage); }
     if (State.panMode) { State._panStart = null; return; }
     State._drag = null;
     if (selBox) { selBox.remove(); selBox = null; }
@@ -1070,7 +1071,7 @@ function normalizeLatex(text) {
   return text;
 }
 
-/* ===== 형광펜 ===== */
+/* ===== 사각형 메모 도구 ===== */
 function setupHighlighter() {
   document.getElementById("btn-tool-select").addEventListener("click", () => setToolMode("select"));
   document.getElementById("btn-tool-hl").addEventListener("click",     () => setToolMode("hl"));
@@ -1080,7 +1081,7 @@ function setupHighlighter() {
   document.querySelectorAll(".hl-color-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       State.hlColor = btn.dataset.color;
-      State.hlTool  = "pen";
+      State.hlTool  = "rect";
       document.querySelectorAll(".hl-color-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById("btn-hl-eraser")?.classList.remove("active");
@@ -1089,16 +1090,10 @@ function setupHighlighter() {
 
   // 지우개
   document.getElementById("btn-hl-eraser").addEventListener("click", () => {
-    State.hlTool = State.hlTool === "eraser" ? "pen" : "eraser";
+    State.hlTool = State.hlTool === "eraser" ? "rect" : "eraser";
     document.getElementById("btn-hl-eraser").classList.toggle("active", State.hlTool === "eraser");
     document.querySelectorAll(".hl-color-btn").forEach(b => b.classList.toggle("active",
       b.dataset.color === State.hlColor && State.hlTool !== "eraser"));
-  });
-
-  // 스냅 토글
-  document.getElementById("btn-hl-snap").addEventListener("click", () => {
-    State.hlSnap = !State.hlSnap;
-    document.getElementById("btn-hl-snap").classList.toggle("active", State.hlSnap);
   });
 
   // 필터
@@ -1112,7 +1107,7 @@ function setupHighlighter() {
     });
   });
 
-  // 취소
+  // 취소 (마지막 사각형 제거)
   document.getElementById("btn-hl-undo").addEventListener("click", () => {
     const ch = State.currentChapter; if (!ch) return;
     const pd = State.highlights?.[ch.id]?.[State.currentLeftPage];
@@ -1122,15 +1117,17 @@ function setupHighlighter() {
     }
     saveHighlights();
     drawHighlightsOnPage(ch.id, State.currentLeftPage);
+    renderRectPanel();
   });
 
   // 전체 지우기
   document.getElementById("btn-hl-clear").addEventListener("click", () => {
     const ch = State.currentChapter; if (!ch) return;
-    if (!confirm("이 페이지의 모든 형광펜을 지울까요?")) return;
+    if (!confirm("이 페이지의 모든 사각형을 지울까요?")) return;
     if (State.highlights[ch.id]) delete State.highlights[ch.id][State.currentLeftPage];
     saveHighlights();
     drawHighlightsOnPage(ch.id, State.currentLeftPage);
+    renderRectPanel();
   });
 }
 
@@ -1152,130 +1149,88 @@ function setToolMode(mode) {
 
   const hints = {
     select: "💡 드래그 → AI 질문",
-    hl:     "🖊 드래그하여 형광펜 표시 / 지우개 선택 후 드래그로 삭제",
+    hl:     "⬜ 드래그하여 사각형 표시 / 지우개 선택 후 클릭으로 삭제",
     pan:    "✋ 드래그하여 페이지 이동",
   };
   document.getElementById("scan-drag-hint").textContent = hints[mode] || hints.select;
 }
 
-/* 형광펜 그리기 */
-function hlStartStroke(e) {
-  State._hlLivePoints = [];
+/* 사각형 그리기 */
+function rectStartDraw(e) {
   const info = hlGetCanvasCoords(e.clientX, e.clientY);
   if (!info) return;
-  State._hlLivePath = { tool: State.hlTool, color: State.hlColor, side: info.side };
-  State._hlLivePoints = [{ x: info.x, y: info.y }];
+  State._rectStart = { x: info.x, y: info.y, side: info.side };
 }
 
-function hlContinueStroke(e) {
-  if (!State._hlLivePath) return;
+function rectContinueDraw(e) {
+  if (!State._rectStart) return;
   const info = hlGetCanvasCoords(e.clientX, e.clientY);
-  if (!info || info.side !== State._hlLivePath.side) return;
-  State._hlLivePoints.push({ x: info.x, y: info.y });
+  if (!info || info.side !== State._rectStart.side) return;
 
   const hlId = info.side === "left" ? "hl-canvas-left" : "hl-canvas-right";
   const canvas = document.getElementById(hlId);
   const ctx = canvas.getContext("2d");
+  redrawHlCanvas(canvas, State.currentChapter?.id, State.currentLeftPage, info.side);
 
   if (State.hlTool === "eraser") {
-    // 지우개: 현재 좌표 실시간 preview (빨간 점)
-    redrawHlCanvas(canvas, State.currentChapter?.id, State.currentLeftPage, info.side);
-    hlDrawEraserPreview(ctx, State._hlLivePoints);
+    rectDrawEraserPreview(ctx, info.x, info.y);
   } else {
-    // 펜: 라이브 획 preview
-    redrawHlCanvas(canvas, State.currentChapter?.id, State.currentLeftPage, info.side);
-    hlDrawLiveLine(ctx, State._hlLivePoints, State.hlColor);
+    const x = Math.min(State._rectStart.x, info.x);
+    const y = Math.min(State._rectStart.y, info.y);
+    const w = Math.abs(info.x - State._rectStart.x);
+    const h = Math.abs(info.y - State._rectStart.y);
+    rectDrawLive(ctx, x, y, w, h, State.hlColor);
   }
 }
 
-function hlFinishStroke() {
-  const path = State._hlLivePath;
-  const pts  = State._hlLivePoints;
-  State._hlLivePath = null;
-  State._hlLivePoints = [];
-
-  if (!path || pts.length < 2) return;
+function rectFinishDraw(e) {
+  const start = State._rectStart;
+  State._rectStart = null;
+  if (!start) return;
   const ch = State.currentChapter; if (!ch) return;
 
-  if (path.tool === "eraser") {
-    // 지우개: 교차하는 획 제거
-    hlEraseIntersecting(ch.id, path.side, pts);
-  } else {
-    // 펜: 스냅 또는 freehand 저장
-    const entry = hlBuildEntry(path.side, path.color, pts);
-    if (!State.highlights[ch.id]) State.highlights[ch.id] = {};
-    if (!State.highlights[ch.id][State.currentLeftPage])
-      State.highlights[ch.id][State.currentLeftPage] = { left:[], right:[] };
-    State.highlights[ch.id][State.currentLeftPage][path.side].push(entry);
+  if (State.hlTool === "eraser") {
+    const info = hlGetCanvasCoords(e.clientX, e.clientY);
+    if (info && info.side === start.side) rectEraseAt(ch.id, info.side, info.x, info.y);
+    drawHighlightsOnPage(ch.id, State.currentLeftPage);
+    return;
   }
+
+  const info = hlGetCanvasCoords(e.clientX, e.clientY);
+  if (!info || info.side !== start.side) {
+    drawHighlightsOnPage(ch.id, State.currentLeftPage);
+    return;
+  }
+
+  const x = Math.min(start.x, info.x);
+  const y = Math.min(start.y, info.y);
+  const w = Math.abs(info.x - start.x);
+  const h = Math.abs(info.y - start.y);
+  if (w < 5 || h < 5) { drawHighlightsOnPage(ch.id, State.currentLeftPage); return; }
+
+  if (!State.highlights[ch.id]) State.highlights[ch.id] = {};
+  if (!State.highlights[ch.id][State.currentLeftPage])
+    State.highlights[ch.id][State.currentLeftPage] = { left:[], right:[] };
+  State.highlights[ch.id][State.currentLeftPage][start.side].push(
+    { type: "rect", color: State.hlColor, x, y, w, h }
+  );
   saveHighlights();
   drawHighlightsOnPage(ch.id, State.currentLeftPage);
+  renderRectPanel();
 }
 
-function hlBuildEntry(side, color, points) {
-  // 텍스트 스냅 모드: 드로잉 영역과 겹치는 텍스트 라인을 사각형으로 변환
-  if (State.hlSnap) {
-    const pageNum = side === "left" ? State.currentLeftPage : State.currentLeftPage + 1;
-    const textItems = State.textCache.get(pageNum);
-    if (textItems?.length) {
-      const minX = Math.min(...points.map(p => p.x));
-      const maxX = Math.max(...points.map(p => p.x));
-      const minY = Math.min(...points.map(p => p.y));
-      const maxY = Math.max(...points.map(p => p.y));
-      const lc   = document.getElementById("scan-page-left");
-      const cssW = lc?._cssWidth || parseFloat(lc?.style.width) || lc?.width || 600;
-      const lw   = cssW * 0.025;
-      const padY = lw;
-
-      // 드로잉 Y 범위와 겹치는 텍스트 아이템 수집
-      const hit = textItems.filter(ti =>
-        ti.y < maxY + padY && ti.y + ti.h > minY - padY &&
-        ti.x < maxX + 10   && ti.x + ti.w > minX - 10
-      );
-      if (hit.length > 0) {
-        // 라인 별 그룹 (Y 기준 ±4px)
-        const lines = [];
-        hit.forEach(ti => {
-          let found = lines.find(l => Math.abs(l.y - ti.y) < ti.h * 0.5);
-          if (found) {
-            found.x1 = Math.min(found.x1, ti.x);
-            found.x2 = Math.max(found.x2, ti.x + ti.w);
-            found.y1 = Math.min(found.y1, ti.y);
-            found.y2 = Math.max(found.y2, ti.y + ti.h);
-            found.y  = found.y1;
-          } else {
-            lines.push({ y: ti.y, x1: ti.x, x2: ti.x + ti.w, y1: ti.y, y2: ti.y + ti.h });
-          }
-        });
-        return {
-          type: "rects",
-          color,
-          rects: lines.map(l => ({ x: l.x1 - 2, y: l.y1 - 2, w: l.x2 - l.x1 + 4, h: l.y2 - l.y1 + 4 })),
-        };
-      }
-    }
-  }
-  // freehand fallback
-  return { type: "path", color, points };
-}
-
-/* 지우개: 스트로크 포인트와 가까운 획 제거 */
-function hlEraseIntersecting(chId, side, eraserPts) {
+/* 지우개: 클릭 지점에 닿는 사각형 제거 */
+function rectEraseAt(chId, side, x, y) {
   const pd = State.highlights?.[chId]?.[State.currentLeftPage]?.[side];
   if (!pd) return;
-  const lc = document.getElementById("scan-page-left");
-  const cssW = lc?._cssWidth || parseFloat(lc?.style.width) || lc?.width || 600;
-  const radius = cssW * 0.04;
+  const margin = 8;
   State.highlights[chId][State.currentLeftPage][side] = pd.filter(entry => {
-    const entryPts = entry.type === "rects"
-      ? entry.rects.flatMap(r => [
-          {x:r.x,y:r.y},{x:r.x+r.w,y:r.y},{x:r.x,y:r.y+r.h},{x:r.x+r.w,y:r.y+r.h}
-        ])
-      : entry.points || [];
-    return !entryPts.some(pp =>
-      eraserPts.some(ep => Math.hypot(pp.x - ep.x, pp.y - ep.y) < radius)
-    );
+    if (entry.type !== "rect") return true;
+    return !(x >= entry.x - margin && x <= entry.x + entry.w + margin &&
+             y >= entry.y - margin && y <= entry.y + entry.h + margin);
   });
+  saveHighlights();
+  renderRectPanel();
 }
 
 // 좌표는 CSS(display) 픽셀 기준 — RENDER_SCALE과 무관하게 일관성 유지
@@ -1309,66 +1264,45 @@ function redrawHlCanvas(canvas, chId, leftPage, side) {
   const entries = State.highlights?.[chId]?.[leftPage]?.[side] || [];
   entries.forEach(entry => {
     if (!State.hlFilter.has(entry.color)) return;
-    hlRenderEntry(ctx, entry, cssW);
+    hlRenderEntry(ctx, entry);
   });
   ctx.restore();
 }
 
-function hlRenderEntry(ctx, entry, cssW) {
-  // ctx는 이미 CSS 좌표계로 scale된 상태 (redrawHlCanvas에서 설정)
-  const width = cssW || ctx.canvas.width;
+function hlRenderEntry(ctx, entry) {
+  if (entry.type !== "rect") return;
   const color = HL_COLORS[entry.color]?.hex || "#FFE600";
   ctx.save();
-  ctx.globalAlpha = 0.45;
-  ctx.globalCompositeOperation = "multiply";
-  ctx.fillStyle = color;
   ctx.strokeStyle = color;
-
-  if (entry.type === "rects") {
-    entry.rects.forEach(r => ctx.fillRect(r.x, r.y, r.w, r.h));
-  } else {
-    if (!entry.points || entry.points.length < 2) { ctx.restore(); return; }
-    const lw = width * 0.025 || 12;
-    ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    ctx.beginPath();
-    ctx.moveTo(entry.points[0].x, entry.points[0].y);
-    entry.points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-  }
+  ctx.lineWidth = 2.5;
+  ctx.globalAlpha = 0.9;
+  ctx.strokeRect(entry.x, entry.y, entry.w, entry.h);
   ctx.restore();
 }
 
-function hlDrawLiveLine(ctx, points, color) {
-  if (points.length < 2) return;
+function rectDrawLive(ctx, x, y, w, h, color) {
   const cssW  = ctx.canvas._cssWidth || parseFloat(ctx.canvas.style.width) || ctx.canvas.width;
   const ratio = ctx.canvas.width / cssW;
-  const lw = cssW * 0.025 || 12;
   ctx.save();
   ctx.scale(ratio, ratio);
-  ctx.globalAlpha = 0.45;
-  ctx.globalCompositeOperation = "multiply";
   ctx.strokeStyle = HL_COLORS[color]?.hex || "#FFE600";
-  ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-  ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 3]);
+  ctx.globalAlpha = 0.85;
+  ctx.strokeRect(x, y, w, h);
   ctx.restore();
 }
 
-function hlDrawEraserPreview(ctx, points) {
-  if (!points.length) return;
+function rectDrawEraserPreview(ctx, x, y) {
   const cssW  = ctx.canvas._cssWidth || parseFloat(ctx.canvas.style.width) || ctx.canvas.width;
   const ratio = ctx.canvas.width / cssW;
-  const radius = cssW * 0.04 || 20;
-  const last = points[points.length - 1];
   ctx.save();
   ctx.scale(ratio, ratio);
-  ctx.globalAlpha = 0.5;
+  ctx.globalAlpha = 0.6;
   ctx.strokeStyle = "#cc0000";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.arc(last.x, last.y, radius, 0, Math.PI * 2);
+  ctx.arc(x, y, 12, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }
@@ -1395,6 +1329,93 @@ function showAnnDetail(ann) {
     });
   }
   document.getElementById("ann-detail-modal").classList.remove("hidden");
+}
+
+/* ===== 사각형 메모 패널 ===== */
+function setupAnnPanelTabs() {
+  document.getElementById("btn-annpanel-ai").addEventListener("click", () => {
+    State.annPanelTab = "ai";
+    document.getElementById("btn-annpanel-ai").classList.add("active");
+    document.getElementById("btn-annpanel-rect").classList.remove("active");
+    document.getElementById("ann-ai-area").classList.remove("hidden");
+    document.getElementById("rect-panel").classList.add("hidden");
+    document.getElementById("btn-clear-anns").style.display = "";
+  });
+  document.getElementById("btn-annpanel-rect").addEventListener("click", () => {
+    State.annPanelTab = "rect";
+    document.getElementById("btn-annpanel-rect").classList.add("active");
+    document.getElementById("btn-annpanel-ai").classList.remove("active");
+    document.getElementById("ann-ai-area").classList.add("hidden");
+    document.getElementById("rect-panel").classList.remove("hidden");
+    document.getElementById("btn-clear-anns").style.display = "none";
+    renderRectPanel();
+  });
+
+  // 색상 필터 in rect panel
+  document.querySelectorAll(".rect-flt-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.rectPanelFilter = btn.dataset.color;
+      document.querySelectorAll(".rect-flt-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderRectPanel();
+    });
+  });
+}
+
+function renderRectPanel() {
+  const rectList = document.getElementById("rect-list");
+  if (!rectList) return;
+
+  const items = [];
+  const fc = State.rectPanelFilter || "all";
+
+  Object.entries(State.highlights).forEach(([chId, pages]) => {
+    const ch = State.chapters.find(c => c.id === chId);
+    Object.entries(pages).forEach(([pageStr, sides]) => {
+      const leftPage = parseInt(pageStr);
+      ["left","right"].forEach(side => {
+        (sides[side] || []).forEach((entry, idx) => {
+          if (entry.type !== "rect") return;
+          if (fc !== "all" && entry.color !== fc) return;
+          const pageNum = side === "right" ? leftPage + 1 : leftPage;
+          items.push({ chId, chTitle: ch?.title || chId, leftPage, pageNum, side, entry, idx });
+        });
+      });
+    });
+  });
+
+  items.sort((a, b) => a.pageNum - b.pageNum);
+
+  if (!items.length) {
+    rectList.innerHTML = '<p class="ann-empty">저장된 사각형 메모가 없습니다</p>';
+    return;
+  }
+
+  rectList.innerHTML = items.map((item, i) => {
+    const color = HL_COLORS[item.entry.color];
+    return `
+      <div class="rect-card" data-idx="${i}" style="border-left:3px solid ${color?.hex || '#FFE600'}">
+        <div class="rect-card-info">
+          <span class="rect-color-dot" style="background:${color?.hex || '#FFE600'}"></span>
+          <span class="rect-card-label">${escHtml(color?.label || '')}</span>
+          <span class="rect-card-page">p.${item.pageNum}</span>
+        </div>
+        <div class="rect-card-ch">${escHtml(item.chTitle)}</div>
+      </div>`;
+  }).join("");
+
+  rectList.querySelectorAll(".rect-card").forEach((card, i) => {
+    card.addEventListener("click", () => {
+      const item = items[i];
+      const ch = State.chapters.find(c => c.id === item.chId);
+      if (!ch) return;
+      if (State.currentChapter?.id !== ch.id) {
+        loadChapterScan(ch).then(() => showSpread(item.leftPage));
+      } else {
+        showSpread(item.leftPage);
+      }
+    });
+  });
 }
 
 function renderWelcomeStats() {
