@@ -427,7 +427,12 @@ function setupStudyControls() {
 // Server renders each page as WebP at 2.5× PDF points. Browser caches indefinitely.
 const SERVER_PAGE_SCALE = 2.5;
 
+// 챕터 로드 순서 추적 — 이전 챕터의 지연된 렌더가 새 챕터를 덮어쓰는 race condition 방지
+let _scanLoadId = 0;
+
 async function loadChapterScan(ch) {
+  const myId = ++_scanLoadId;
+
   document.getElementById("scan-ann-overlay").innerHTML = "";
   State.panX = 0; State.panY = 0; State.zoomLevel = 1.0;
   State.currentScale = null;  // recompute from viewer size on first render
@@ -438,25 +443,35 @@ async function loadChapterScan(ch) {
   State.chapterEndPage   = ch.conceptEndPage   || ch.endPage   || 999;
 
   try {
-    await showSpread(State.chapterStartPage);
+    await showSpread(State.chapterStartPage, myId);
+    if (_scanLoadId !== myId) return;  // 이후 챕터가 이미 로드됨 — 중단
     State.annPanelChapter = null;
     renderAnnotationList(null);
     preRenderChapter(State.chapterStartPage, State.chapterEndPage);
   } catch (err) {
     console.error("뷰어 오류:", err);
   } finally {
-    document.getElementById("scan-loading").classList.add("hidden");
+    if (_scanLoadId === myId) {
+      document.getElementById("scan-loading").classList.add("hidden");
+    }
   }
 }
 
-async function showSpread(leftPageNum) {
-  leftPageNum = Math.max(State.chapterStartPage,
-                Math.min(leftPageNum, State.chapterEndPage));
+async function showSpread(leftPageNum, loadId) {
+  // loadId가 주어지면 챕터 전환 race condition 감지에 사용 (page nav 시엔 undefined)
+  const snapStart = State.chapterStartPage;
+  const snapEnd   = State.chapterEndPage;
+
+  leftPageNum = Math.max(snapStart, Math.min(leftPageNum, snapEnd));
   State.currentLeftPage = leftPageNum;
   const rightPageNum = leftPageNum + 1;
   const lCanvas = document.getElementById("scan-page-left");
   const rCanvas = document.getElementById("scan-page-right");
-  const rightExists = rightPageNum <= State.chapterEndPage;
+  const rightExists = rightPageNum <= snapEnd;
+
+  function isStale() {
+    return loadId !== undefined && _scanLoadId !== loadId;
+  }
 
   // ── 캐시 히트 시 즉시 표시 ──
   const lCached = State.pageCache.get(leftPageNum);
@@ -467,13 +482,12 @@ async function showSpread(leftPageNum) {
   else if (!rightExists && lCached) renderBlankCanvas(rCanvas, lCanvas);
 
   if (lCached && (rCached || !rightExists)) {
-    finishSpreadUI(leftPageNum);
-    preRenderNeighbors(leftPageNum);
+    if (!isStale()) { finishSpreadUI(leftPageNum); preRenderNeighbors(leftPageNum); }
     return;
   }
 
   // ── 캐시 미스: 서버에서 이미지 fetch ──
-  document.getElementById("scan-loading").classList.remove("hidden");
+  if (!isStale()) document.getElementById("scan-loading").classList.remove("hidden");
   try {
     const tasks = [];
     if (!lCached) tasks.push(preRenderOne(leftPageNum));
@@ -481,22 +495,23 @@ async function showSpread(leftPageNum) {
     else if (!rightExists) renderBlankCanvas(rCanvas, lCanvas);
     await Promise.all(tasks);
 
+    if (isStale()) return;  // 새 챕터가 로드됨 — 이 결과는 무시
+
     const lNew = State.pageCache.get(leftPageNum);
     const rNew = State.pageCache.get(rightPageNum);
     if (lNew) blitCache(lNew, lCanvas, "hl-canvas-left");
     if (rNew && rightExists) blitCache(rNew, rCanvas, "hl-canvas-right");
     else if (!rightExists && lNew) renderBlankCanvas(rCanvas, lCanvas);
 
-    // 텍스트 레이어 백그라운드 로드 (AI·형광펜 스냅용, PDF.js 지연 로딩)
+    // 텍스트 레이어 백그라운드 로드 (AI 질문용, PDF.js 지연 로딩)
     const scale = State.currentScale || 1;
     loadPageText(leftPageNum, scale);
     if (rightExists) loadPageText(rightPageNum, scale);
   } finally {
-    document.getElementById("scan-loading").classList.add("hidden");
+    if (!isStale()) document.getElementById("scan-loading").classList.add("hidden");
   }
 
-  finishSpreadUI(leftPageNum);
-  preRenderNeighbors(leftPageNum);
+  if (!isStale()) { finishSpreadUI(leftPageNum); preRenderNeighbors(leftPageNum); }
 }
 
 function finishSpreadUI(leftPageNum) {
